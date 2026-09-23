@@ -1,0 +1,17 @@
+title: Reviewing and Improving Pull Requests with an AI Coding Assistant
+title_zh: 借助 AI 编程助手评审并改进 PR
+summary: >-
+  Review four open pull requests against a small Python job-queue library — the problem each solves, the
+  specific problems in its diff, missing tests, and whether it can be merged — then choose one, improve it,
+  add tests, and rewrite its description.
+summary_zh: "针对一个小型 Python 任务队列库审查四个待合并的 PR —— 各自要解决的问题、diff 中的具体问题、缺失的测试、能否合并 ——然后选定一个 PR 加以改进、补充测试，并重写它的描述。"
+category: coding
+kind: Code review · AI-assisted, Python
+kind_zh: 代码评审 · AI 辅助，Python
+roles: [SWE, Infra Eng]
+topics: [code-review, pull-requests, race-condition, deserialization, testing]
+difficulty: medium
+frequency: medium
+format: 4 PRs / 55 min
+stage: [phone-screen, onsite]
+order: 2

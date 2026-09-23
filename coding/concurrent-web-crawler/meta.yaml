@@ -1,0 +1,17 @@
+title: Concurrent Web Crawler
+title_zh: 并发网页爬虫
+summary: >-
+  Crawl every page reachable from a start URL under its hostname, given a slow, thread-safe
+  get_urls helper: a single-threaded BFS first, then a bounded thread pool whose result and
+  per-page fetch count must match it exactly, then an asyncio version bounded by a concurrency limit.
+summary_zh: "给定一个较慢、可安全并发调用的 get_urls 接口，从起始 URL 出发爬取同一 hostname 下所有可达页面：先写单线程 BFS；再写有界线程池版本，其结果与每个页面的抓取次数必须与单线程完全一致；最后写一个受并发上限约束的 asyncio 版本。"
+category: coding
+kind: Coding · concurrency, Python
+kind_zh: 编程 · 并发，Python
+roles: [SWE, MLE, Infra Eng]
+topics: [bfs, threading, asyncio, url-normalization, thread-safety]
+difficulty: medium
+frequency: high
+format: 3 parts / 55 min
+stage: [phone-screen, onsite]
+order: 2

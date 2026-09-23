@@ -1,0 +1,18 @@
+title: Call Stacks from Profiler Samples
+title_zh: 从采样还原调用栈事件
+summary: >-
+  Convert timestamped call-stack samples from a profiler into function start/end events using the
+  longest common prefix between consecutive samples; then stream the same conversion in O(depth)
+  memory with a debounce rule for noisy frames; then index known complete stack traces in a trie so a
+  truncated crash trace can be matched against them by its trailing frames.
+summary_zh: "把性能分析器采集到的带时间戳调用栈样本，通过相邻样本之间的最长公共前缀，转换成函数的 start/end 事件；再把同样的转换改写成 O(depth) 内存的流式版本，并加入对噪声帧的去抖规则；最后用字典树索引一批已知的完整调用栈，使被截断的崩溃调用栈可以按其末尾若干帧去匹配它们。"
+category: coding
+kind: Coding · stacks, string processing
+kind_zh: 编程 · 调用栈，字符串处理
+roles: [SWE, MLE, Infra Eng]
+topics: [call-stack, longest-common-prefix, streaming, debounce, trie, recursion]
+difficulty: medium
+frequency: high
+format: 3 parts / 55 min
+stage: [phone-screen, onsite]
+order: 1

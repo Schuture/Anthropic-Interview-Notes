@@ -1,0 +1,18 @@
+title: "Design Doc Review: A Batched Inference Service"
+title_zh: "设计文档评审：批处理推理服务"
+summary: >-
+  Review a flawed design document for the batching and load-balancing layer in front of a GPU
+  model-serving pool at 10,000 requests/second peak: rank the risks, correct a capacity estimate
+  that silently assumes every batch is full, and fix the dispatch policy the document proposes for
+  a shared 8-GPU pool serving a large and a small model.
+summary_zh: "评审一份存在缺陷的设计文档——它为 GPU 模型服务池前的批处理与负载均衡层而写，峰值流量为每秒 10,000 个请求：为风险排出优先级，修正一个默认每个批次都被打满的容量估算，并修正文档中为大、小两种模型共享一个 8 卡 GPU 池所提出的调度策略。"
+category: system-design
+kind: Design review
+kind_zh: 设计评审
+roles: [SWE, MLE, EM]
+topics: [design-review, batching, load-balancing, capacity-planning, gpu-scheduling]
+difficulty: hard
+frequency: high
+format: 55 min
+stage: [phone-screen, onsite]
+order: 1

@@ -1,0 +1,18 @@
+title: LLM Inference API with Batched GPU Serving
+title_zh: 带批处理的 LLM 推理 API
+summary: >-
+  Design the public API and dispatcher in front of a pool of GPU model replicas that expose a
+  fixed-latency batch call, covering batching policy, load balancing and admission control,
+  KV-cache and prefix-cache arithmetic, real-time/offline isolation, and a follow-up scheduling
+  policy for a large model that needs a whole 8-GPU pool against a small model that needs one GPU.
+summary_zh: "设计位于固定延迟批处理 GPU 模型副本池前的公开 API 与调度层：批处理策略、负载均衡与准入控制、KV cache 与前缀缓存的内存核算、实时与离线流量隔离，以及大模型需要整个 8 卡池、小模型只需 1 卡时的调度策略追问。"
+category: system-design
+kind: System design
+kind_zh: 系统设计
+roles: [SWE, MLE, Infra Eng]
+topics: [batching, kv-cache, gpu-scheduling, admission-control, capacity-planning]
+difficulty: hard
+frequency: very-high
+format: 55 min
+stage: [phone-screen, onsite]
+order: 1

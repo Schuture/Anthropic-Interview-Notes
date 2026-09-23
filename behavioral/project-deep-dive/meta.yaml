@@ -1,0 +1,16 @@
+title: 'Project Deep Dive: Presentation and Technical Q&A'
+title_zh: 项目深挖：演讲与技术问答
+summary: >-
+  Present one past technical project of your choice for about 20-25 minutes, then defend it through
+  25-30 minutes of Q&A on context, architecture, rejected alternatives, your own contribution, results,
+  failures, and scale.
+summary_zh: "用约 20-25 分钟展示一个你自己选定的过往技术项目，再用 25-30 分钟的问答为它辩护：背景、架构、被放弃的方案、你自己的贡献、结果、失败之处与扩展性。"
+category: behavioral
+kind: Presentation and Q&A
+kind_zh: 演讲与问答
+roles: [All]
+topics: [presentation, project-deep-dive, trade-offs, metrics, retrospective]
+frequency: very-high
+stage: [onsite]
+format: 55 min
+order: 4

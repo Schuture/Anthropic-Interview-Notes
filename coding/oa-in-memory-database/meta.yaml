@@ -1,0 +1,17 @@
+title: 'Online Assessment: In-Memory Database'
+title_zh: 在线测评：内存数据库
+summary: >-
+  A four-level, gated online assessment: an in-memory store of (key, field) -> value records,
+  extended level by level with sorted scans, per-field TTL expiry, and a backup/restore
+  mechanism whose TTLs resume counting down from the moment of the restore.
+summary_zh: "一道四关递进解锁的在线测评题：先实现一个 (key, field) -> value 的内存记录存储，再逐关加入按字段名排序的扫描、逐字段的 TTL 过期，最后加入备份/恢复机制，恢复后剩余的 TTL 要从恢复时刻重新开始倒计时。"
+category: coding
+kind: Online assessment · 4 levels
+kind_zh: 在线测评 · 4 关
+roles: [SWE, MLE, Infra Eng]
+topics: [oop-design, hash-table, ttl, snapshotting]
+difficulty: medium
+frequency: medium
+format: 4 levels / 90 min
+stage: [oa]
+order: 4

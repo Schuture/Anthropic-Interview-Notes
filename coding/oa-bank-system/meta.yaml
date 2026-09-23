@@ -1,0 +1,18 @@
+title: "Online Assessment: Banking System"
+title_zh: "在线测评：银行系统"
+summary: >-
+  Build a bank-account class across four gated levels: deposits and withdrawals with exact return
+  values, a leaderboard ranked by outgoing spend, a two-step transfer that holds funds until the
+  recipient accepts or the hold expires, and an account merge whose effects a later point-in-time
+  balance query must report correctly, including for an account id that is merged away and reused.
+summary_zh: "分四关递进解锁地搭建一个银行账户类：存取款与精确的返回值；按转出总额排名的榜单；一种两步转账，款项在被接收或过期前处于保留状态；以及账户合并，合并后某个时间点的余额查询必须正确处理——即使该账户曾被合并注销、又用同一 id 重新创建。"
+category: coding
+kind: Online assessment · 4 levels
+kind_zh: 在线测评 · 4 关
+roles: [SWE, Fellows]
+topics: [oop-design, ledger, state-machine, timestamps, merge]
+difficulty: medium
+frequency: medium
+format: 4 levels / 90 min
+stage: [oa]
+order: 6

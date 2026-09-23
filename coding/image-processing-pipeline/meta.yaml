@@ -1,0 +1,18 @@
+title: Image Processing Pipeline
+title_zh: 图像处理流水线
+summary: >-
+  Apply a JSON pipeline of Pillow transformations — grayscale, flip, scale, blur, rotate — to every
+  image in a folder with exact rounding and resampling rules; then parallelise the batch across a
+  process pool without re-decoding a source image once per pipeline; then reuse the leading steps two
+  pipelines on the same image share, so each distinct prefix is computed exactly once.
+summary_zh: "按 JSON 流水线中给定的顺序，对文件夹里的每张图片执行灰度、翻转、缩放、模糊、旋转等 Pillow 变换，尺寸取整和重采样规则都精确给定；再把整批任务分摊到进程池并行执行，且不能让同一张源图随流水线数量重复解码；最后让同一张图片里几条流水线共享的前缀步骤只计算一次。"
+category: coding
+kind: Coding · concurrency, image processing
+kind_zh: 编程 · 并发，图像处理
+roles: [SWE, MLE, Infra Eng]
+topics: [image-processing, pillow, multiprocessing, concurrency, caching]
+difficulty: medium
+frequency: very-high
+format: 3 parts / 55 min
+stage: [phone-screen, onsite]
+order: 2

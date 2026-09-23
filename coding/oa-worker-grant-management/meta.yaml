@@ -1,0 +1,18 @@
+title: "Online Assessment: Office Access, Promotions and Pay"
+title_zh: 在线测评：员工考勤、晋升与薪酬
+summary: >-
+  Build a workforce-tracking class across four gated levels: office sessions from clock-in/clock-out
+  events, a total-time leaderboard, promotions that take effect only at a worker's next entry, and pay
+  calculated over sessions that may straddle a double-pay period, with overlapping bonus windows merged
+  before the multiplier is applied.
+summary_zh: 分四关递进解锁地构建一个员工考勤类：由进出办公室事件构成工作时段、按总工时排名的榜单、只在员工下一次进入办公室时才生效的晋升，以及跨越双倍薪资时段的工资计算——重叠的双倍薪资区间需先合并，再应用倍率。
+category: coding
+kind: Online assessment · 4 levels
+kind_zh: 在线测评 · 4 关
+roles: [SWE, MLE]
+topics: [oop-design, interval-merge, timestamps, payroll, ranking]
+difficulty: medium
+frequency: low
+format: 4 levels / 90 min
+stage: [oa]
+order: 5

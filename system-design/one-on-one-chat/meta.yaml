@@ -1,0 +1,18 @@
+title: One-to-One Chat System
+title_zh: 一对一聊天系统
+summary: >-
+  Direct messaging between exactly two users, online or offline: WebSocket delivery with at-least-once
+  semantics and client-side deduplication, a durable per-recipient offline queue drained on reconnect,
+  presence from heartbeats and a TTL key, and the Kafka-vs-Redis trade-off for the delivery bus behind a
+  database that stays the source of truth.
+summary_zh: "两个用户之间的一对一消息收发，无论对方是否在线：基于 WebSocket 的至少一次投递与客户端去重、断线重连时排空的按接收者持久化的离线队列、由心跳与 TTL 键维护的在线状态，以及投递总线在 Kafka 与 Redis 之间的取舍——数据库才是真正的权威数据源。"
+category: system-design
+kind: System design
+kind_zh: 系统设计
+roles: [SWE, MLE]
+topics: [websocket, presence, offline-delivery, message-ordering, kafka-vs-redis]
+difficulty: medium
+frequency: high
+format: 55 min
+stage: [phone-screen, onsite]
+order: 3

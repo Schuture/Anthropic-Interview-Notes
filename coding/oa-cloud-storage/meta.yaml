@@ -1,0 +1,17 @@
+title: "Online Assessment: Cloud File Storage"
+title_zh: 在线测评：云存储系统
+summary: >-
+  Build a cloud storage class over four levels that each unlock once the previous one's tests pass:
+  named files with sizes and copies; prefix/suffix search across the store; per-user accounts with
+  storage quotas; and file compression paired with per-user backup and restore.
+summary_zh: "分四关搭建一个云存储类，每一关的测试通过后才解锁下一关：按名称和大小管理文件与复制；在全部文件中做前缀/后缀搜索；带存储配额的用户账户；以及文件压缩与按用户备份、恢复。"
+category: coding
+kind: Online assessment · 4 levels
+kind_zh: 在线测评 · 4 关
+roles: [SWE, MLE]
+topics: [oop-design, hash-map, storage-quotas, string-matching]
+difficulty: medium
+frequency: low
+format: 4 levels / 90 min
+stage: [oa]
+order: 11

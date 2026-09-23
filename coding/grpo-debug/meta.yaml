@@ -1,0 +1,17 @@
+title: Debugging a GRPO Training Loop
+title_zh: 调试 GRPO 训练循环
+summary: >-
+  Debug a small GRPO trainer in PyTorch that samples a group of completions per prompt on a toy
+  verifiable-reward task, then defend the ratio, the clipping, and the group-normalized advantage
+  that make it work.
+summary_zh: "调试一个用 PyTorch 实现的小型 GRPO 训练器：它针对一个奖励可验证的玩具任务，为每个 prompt 采样一组补全；然后说明其重要性比率、裁剪机制，以及组内归一化优势函数为何是必需的。"
+category: coding
+kind: Debugging · PyTorch, RL
+kind_zh: 调试 · PyTorch，强化学习
+roles: [RE, RS, MLE]
+topics: [grpo, ppo-clipping, policy-gradient, advantage-normalization, reinforcement-learning]
+difficulty: hard
+frequency: low
+format: 3 bugs + 2 parts / 55 min
+stage: [phone-screen, onsite]
+order: 6

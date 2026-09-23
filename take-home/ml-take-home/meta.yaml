@@ -1,0 +1,18 @@
+title: "Take-Home: A Four-Hour Exploratory ML Study"
+title_zh: "Take-home：四小时探索性机器学习研究"
+summary: >-
+  A self-contained 4-hour take-home: implement a small classifier, then run a grid over symmetric label
+  noise, training-set size, and hidden-layer width on synthetic data to see whether early stopping against
+  a clean validation set recovers the accuracy the noise destroys.
+summary_zh: "一次独立完成的 4 小时 take-home：实现一个小型分类器，在合成数据上对标签噪声、训练集规模与隐藏层宽度做网格实验，检验提前停止能否挽回噪声造成的准确率损失。"
+category: take-home
+kind: Take-home · experiment and presentation
+kind_zh: Take-home · 实验与汇报
+roles: [RE, RS, MLE, Fellows]
+topics: [label-noise, model-capacity, early-stopping, generalization, numpy]
+difficulty: hard
+frequency: low
+format: 4 hours + 40 min review
+format_zh: 4 小时独立工作 + 40 分钟现场复盘
+stage: [take-home]
+order: 2

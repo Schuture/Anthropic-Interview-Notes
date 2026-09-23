@@ -1,0 +1,17 @@
+title: File Deduplication
+title_zh: 重复文件查找
+summary: >-
+  Walk a directory tree and group the files whose contents are byte-identical; then make the search
+  efficient on large trees with a size, prefix-hash and full-hash filter; then parallelise the hashing
+  so the concurrent result matches the sequential one exactly.
+summary_zh: "遍历目录树，把内容完全相同的文件分组；再用大小、前缀哈希、完整哈希这三层过滤，让查找在大目录树上足够高效；最后把哈希计算并行化，并保证并发版本的结果与单线程版本完全一致。"
+category: coding
+kind: Coding · filesystem, hashing
+kind_zh: 编程 · 文件系统，哈希
+roles: [SWE, MLE, Infra Eng]
+topics: [filesystem, hashing, io, concurrency]
+difficulty: medium
+frequency: very-high
+format: 3 parts / 55 min
+stage: [phone-screen, onsite]
+order: 1

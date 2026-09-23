@@ -1,0 +1,17 @@
+title: Building an Agent Loop with Tool Use
+title_zh: 用工具调用搭建智能体循环
+summary: >-
+  Fix a buggy single-tool-call agent built on a Messages-API-style client, generalize it into a loop
+  that answers questions needing several dependent lookups with a turn limit and error handling, then
+  cut the number of model calls a fixed question set needs by parallelizing and batching tool calls.
+summary_zh: "修复一个只支持单次工具调用、但埋有几个 bug 的 agent；把它推广成能处理多次相关查询、带轮数上限和错误处理的通用循环；再通过并行调用和批量工具，压缩回答同一批问题所需的模型调用次数，并实测效果。"
+category: coding
+kind: Coding · LLM agents, tool use
+kind_zh: 编程 · LLM 智能体，工具调用
+roles: [SWE, RE, RS, MLE]
+topics: [tool-use, agent-loop, llm-api, debugging, prompt-engineering]
+difficulty: medium
+frequency: high
+format: 3 parts / 55 min
+stage: [phone-screen]
+order: 3

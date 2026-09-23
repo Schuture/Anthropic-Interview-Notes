@@ -1,0 +1,18 @@
+title: "Online Assessment: DNS Resolver"
+title_zh: 在线测评：DNS 解析器
+summary: >-
+  A five-level, gated online assessment: resolve names against a static in-memory DNS zone, extended
+  level by level with CNAME-chain following and cycle detection, a fallback zone, a per-record TTL
+  cache with lazy expiry, and thread-safe resolution that coalesces concurrent callers of the same
+  name into one upstream lookup.
+summary_zh: "一道五关递进解锁的在线测评题：面向一个静态的内存 DNS 区域实现域名解析，逐关加入 CNAME 链式解析与环检测、一个备用区域、带惰性过期的按记录 TTL 缓存，以及把并发请求同一域名的调用合并为一次上游查询的线程安全解析。"
+category: coding
+kind: Online assessment · 5 levels
+kind_zh: 在线测评 · 5 关
+roles: [Fellows]
+topics: [dns, recursion, caching, ttl, concurrency]
+difficulty: medium
+frequency: low
+format: 5 levels / 90 min
+stage: [oa]
+order: 4

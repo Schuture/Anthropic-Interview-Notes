@@ -1,0 +1,17 @@
+title: "Boot Program Simulator: Find and Fix the Loop"
+title_zh: 启动程序模拟：找到并修复死循环
+summary: >-
+  Simulate a tiny boot program of plus/next/jump instructions, detect the infinite loop that one
+  corrupted instruction causes, then locate and repair that single instruction — first by trying
+  every possible fix, then in linear time with a reverse-reachability graph.
+summary_zh: "模拟一个由 plus/next/jump 指令组成的启动程序，检测出某条被改错的指令造成的死循环，再定位并修复这一条指令——先逐一尝试每种修复，再用基于反向可达图的线性时间算法。"
+category: coding
+kind: Coding · simulation, cycle detection
+kind_zh: 编程 · 模拟，环检测
+roles: [SWE]
+topics: [simulation, cycle-detection, graphs, parsing]
+difficulty: medium
+frequency: low
+format: 3 parts / 55 min
+stage: [phone-screen, onsite]
+order: 1

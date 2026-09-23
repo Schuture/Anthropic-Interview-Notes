@@ -1,0 +1,18 @@
+title: 'Performance Modelling: Matmuls, Roofline and Sharding'
+title_zh: 性能建模：矩阵乘法、Roofline 与切分
+summary: >-
+  Estimate wall-clock time for bf16 matmuls of several shapes on one accelerator with a roofline
+  model, extend it to a 72-layer stack of alternating matmuls and check whether it fits in one
+  device's memory, compare pipeline and tensor parallelism across two devices on a single input, and
+  build a cost model for sharding a feed-forward network by tensor or by token across p devices.
+summary_zh: "用 roofline 模型估算若干形状的 bf16 矩阵乘法在单块加速卡上的墙钟时间，将模型扩展到一个由两种矩阵乘法交替组成的 72 层堆叠并检查它能否放进单卡显存，在两块设备间比较流水线并行与张量并行处理单个输入的表现，并为前馈网络按张量或按 token 切分在 p 个设备上建立代价模型。"
+category: coding
+kind: Estimation · roofline model, no code
+kind_zh: 估算 · Roofline 模型，无代码
+roles: [Perf Eng, MLE, Infra Eng]
+topics: [roofline, arithmetic-intensity, gpu-performance, parallelism, ffn-sharding]
+difficulty: hard
+frequency: low
+format: 4 parts / 60 min
+stage: [onsite]
+order: 10

@@ -1,0 +1,17 @@
+title: 'Online Assessment: Task Manager with Expiry and Snapshots'
+title_zh: 在线测评：带过期与快照的任务管理
+summary: >-
+  A four-level, gated online assessment: per-user task CRUD with a stated sort order, extended
+  with a per-task TTL that expires tasks lazily, and finished with a time-travel query that
+  reconstructs a user's task list exactly as it stood at any past moment.
+summary_zh: "一道四关递进解锁的在线测评题：先实现带固定排序规则的按用户任务增删改查，再加入按任务设置的 TTL，在读取时惰性过期，最后实现一个时间回溯查询，还原用户任务列表在任意过去时刻的样子。"
+category: coding
+kind: Online assessment · 4 levels
+kind_zh: 在线测评 · 4 关
+roles: [SWE, MLE]
+topics: [oop-design, hash-table, ttl, time-travel, bisect]
+difficulty: medium
+frequency: low
+format: 4 levels / 90 min
+stage: [oa]
+order: 2

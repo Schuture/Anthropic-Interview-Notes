@@ -1,0 +1,17 @@
+title: "Online Assessment: In-Memory File System"
+title_zh: "在线测评：内存文件系统"
+summary: >-
+  Implement an in-memory, path-based file system across four levels: create, read and list files and
+  directories; move, copy and delete them with exact overwrite semantics; add per-user storage quotas;
+  and add point-in-time snapshots of the whole file system.
+summary_zh: "分四关实现一个基于路径的内存文件系统：创建、读取、列出文件与目录；按精确的覆盖规则移动、复制、删除它们；加入按用户配额的存储限制；再加入整份文件系统的时间点快照。"
+category: coding
+kind: Online assessment · 4 levels
+kind_zh: 在线测评 · 4 关
+roles: [SWE, MLE]
+topics: [filesystem, tree, path-normalization, quota, oop-design]
+difficulty: medium
+frequency: low
+format: 4 levels / 90 min
+stage: [oa]
+order: 3

@@ -1,0 +1,18 @@
+title: 'Memoising LRU Cache: Bug Fix and Durability'
+title_zh: LRU 记忆化缓存：修 bug 与持久化
+summary: >-
+  Fix three bugs in a functools.lru_cache-style memoising wrapper, centred on how positional and
+  keyword arguments turn into a cache key; then make the cache survive a process crash with an
+  append-only log and periodic snapshotting; then make it thread-safe, with single-flight so
+  concurrent callers never compute the same missing key twice.
+summary_zh: "修复一个 functools.lru_cache 风格的记忆化包装器里的三个 bug，重点是位置参数和关键字参数如何变成缓存键；再用只追加日志加周期性快照，让缓存能扛住进程崩溃；最后做到线程安全，用 single-flight 保证并发调用者不会对同一个缺失的键重复计算。"
+category: coding
+kind: Coding · debugging, persistence
+kind_zh: 编程 · 调试，持久化
+roles: [SWE, MLE]
+topics: [caching, hashing, persistence, concurrency, serialization]
+difficulty: medium
+frequency: high
+format: 3 parts / 55 min
+stage: [phone-screen, onsite]
+order: 4

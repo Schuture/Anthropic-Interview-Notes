@@ -1,0 +1,18 @@
+title: 'Take-Home: Optimising a Kernel on a Simulated Vector Machine'
+title_zh: 'Take-home：在模拟向量机上优化计算内核'
+summary: >-
+  A from-scratch simulated vector processor — scalar and vector registers, packed instruction
+  bundles, a load latency — comes with a naive kernel to speed up. The job is to pack, hoist,
+  vectorise, unroll and software-pipeline it, checking each step's cycle count against a lower
+  bound derived from the machine's own per-unit throughput.
+summary_zh: "一台从零设计的模拟向量处理器——标量寄存器、向量寄存器、打包发射的指令束、以及加载延迟——配一段朴素内核等待优化。任务是依次打包指令、提取公共常量、向量化、展开循环、做软件流水，并把每一步的周期数与由机器自身单元吞吐量推出的下界对比。"
+category: take-home
+kind: Take-home · performance optimisation
+kind_zh: Take-home · 性能优化
+roles: [Perf Eng]
+topics: [vectorization, loop-unrolling, instruction-scheduling, software-pipelining, simulation]
+difficulty: hard
+frequency: low
+format: 2 hours
+stage: [take-home]
+order: 1

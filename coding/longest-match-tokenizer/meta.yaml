@@ -1,0 +1,18 @@
+title: Longest-Match Tokenizer
+title_zh: 最长匹配分词器
+summary: >-
+  Tokenize a string against a vocabulary by greedy longest match from the left, falling back to a
+  per-character UNK id where nothing matches. Merge consecutive UNKs and bound the match search by
+  the vocabulary's longest entry, then replace that search with a trie built once and reused across
+  many texts.
+summary_zh: "给定一个词表，从左到右按贪心最长匹配对字符串分词，无法匹配的字符逐个退化为 UNK。合并连续出现的 UNK，并用词表中最长词条的长度界定匹配范围，再把这一有界搜索换成只构建一次、可在多段文本间复用的 trie。"
+category: coding
+kind: Coding · string processing
+kind_zh: 编程 · 字符串处理
+roles: [SWE, MLE]
+topics: [greedy, string-processing, trie, tokenization]
+difficulty: medium
+frequency: medium
+format: 3 parts / 55 min
+stage: [phone-screen, onsite]
+order: 3

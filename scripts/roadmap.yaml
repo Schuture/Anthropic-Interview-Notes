@@ -1,0 +1,182 @@
+# Study tracks. scripts/build_index.py turns this file into ROADMAP.md and ROADMAP.zh.md.
+# A track has either curated `stages` (ordered lists of problem folders) or `auto_roles`
+# (every problem tagged with one of those roles, highest priority first).
+
+title: Study roadmap
+title_zh: 学习路线
+intro: >-
+  Four study orders over the same pages, one per track of the hiring process described in the
+  [hiring process guide](PROCESS.md). Pick the track that matches the role you are interviewing for and work down it.
+  ★ shows how often a question comes up, from ★★★★★ (again and again) to ★☆☆☆☆ (rarely).
+intro_zh: >-
+  同一批页面的四种学习顺序，分别对应[招聘与面试流程](PROCESS.zh.md)里的四条招聘路线。选和你投递岗位对应的路线，从上往下做。
+  ★ 表示题目出现的频率，从 ★★★★★（反复出现）到 ★☆☆☆☆（少见）。
+
+tracks:
+  - id: swe
+    title: Software engineering (SWE / Infra)
+    title_zh: 软件工程（SWE / Infra）
+    intro: >-
+      Product and infrastructure software engineers: online assessment, recruiter screen, a coding or system-design
+      screen, then an onsite with coding, system design, project deep dive, culture and hiring manager.
+    intro_zh: 产品和基础设施方向的软件工程师：在线测评、HR 初筛、一轮编程或系统设计电面，然后是包含编程、系统设计、项目深挖、文化面和用人经理面的现场面。
+    stages:
+      - name: 1 · Before the first call
+        name_zh: 1 · 第一通电话之前
+        note: The recruiter screen already asks why Anthropic and what AI safety means to you, and many rejected candidates believed the culture round decided against them. Start both first; good answers take longer to prepare than code.
+        note_zh: HR 初筛就会问为什么选 Anthropic、AI 安全对你意味着什么，而不少被拒的候选人认为是文化面让自己没通过。两者都要最先开始准备：好的回答比代码更花时间。
+        items:
+          - behavioral/recruiter-screen
+          - behavioral/culture-ai-safety
+      - name: 2 · Core coding
+        name_zh: 2 · 核心编程题
+        note: The five most frequent coding problems. Four of them end in a follow-up on concurrency, I/O versus CPU, or durability, which is where most of the time goes.
+        note_zh: 出现最多的五道编程题。其中四道以并发、I/O 与 CPU 的取舍或持久化方面的追问收尾，时间大多花在那里。
+        items:
+          - coding/image-processing-pipeline
+          - coding/file-deduplication
+          - coding/stack-trace-reconstruction
+          - coding/concurrent-web-crawler
+          - coding/lru-cache-bugfix-durability
+      - name: 3 · Core system design
+        name_zh: 3 · 核心系统设计
+        note: Batched inference serving comes both as a blank-page design and as a flawed design document to review; weight distribution is the other frequent prompt.
+        note_zh: 批处理推理服务既会以白纸设计的形式出现，也会以一份有缺陷的设计文档让你评审；权重分发是另一道高频题。
+        items:
+          - system-design/inference-api-batching
+          - system-design/design-doc-review
+          - system-design/model-weight-distribution
+      - name: 4 · Online assessment
+        name_zh: 4 · 在线测评
+        note: Practise under the real conditions — 90 minutes, four levels, each unlocked only once the previous one passes its tests — and keep the code extensible from the first level.
+        note_zh: 按真实条件练：90 分钟、四关，上一关的测试全部通过才会解锁下一关；从第一关起就让代码便于扩展。
+        items:
+          - coding/oa-in-memory-database
+          - coding/oa-bank-system
+          - coding/oa-recipe-manager
+      - name: 5 · More coding
+        name_zh: 5 · 更多编程题
+        note: Includes the AI-assisted rounds, where the assistant is allowed and the skill is reading, reviewing and verifying code quickly.
+        note_zh: 包括允许使用 AI 助手的轮次，考的是快速读代码、评审代码和验证代码的能力。
+        items:
+          - coding/distributed-mode-median
+          - coding/agentic-pr-review
+          - coding/longest-match-tokenizer
+          - coding/llm-agent-tool-loop
+          - coding/bootloader-loop-fix
+      - name: 6 · More system design
+        name_zh: 6 · 更多系统设计
+        items:
+          - system-design/one-on-one-chat
+          - system-design/prompt-playground
+          - system-design/telemetry-data-infrastructure
+      - name: 7 · The rest of the onsite
+        name_zh: 7 · 现场面的其余轮次
+        items:
+          - behavioral/project-deep-dive
+          - behavioral/hiring-manager
+      - name: 8 · Other assessments
+        name_zh: 8 · 其他在线测评
+        items:
+          - coding/oa-task-manager
+          - coding/oa-file-system
+          - coding/oa-cloud-storage
+          - coding/oa-worker-grant-management
+
+  - id: research
+    title: Research (RS / RE)
+    title_zh: 研究方向（RS / RE）
+    intro: >-
+      Research engineers and research scientists: the first technical round is one format from a menu, some teams use
+      a take-home, and the onsite adds research coding and debugging to the culture and hiring-manager rounds.
+    intro_zh: 研究工程师和研究科学家：第一轮技术面是从几种形式里选一种，有的团队用 take-home 作业，现场面在文化面和用人经理面之外再加上研究方向的编程与调试。
+    stages:
+      - name: 1 · Recruiter screen and culture
+        name_zh: 1 · HR 初筛与文化面
+        items:
+          - behavioral/recruiter-screen
+          - behavioral/culture-ai-safety
+      - name: 2 · Research-track screens
+        name_zh: 2 · 研究方向的技术初筛
+        note: The first technical round is one of these formats. Ask your recruiter which one you will get and prepare it first, then the others.
+        note_zh: 第一轮技术面是这几种形式之一。先问清 recruiter 你会拿到哪一种，优先准备它，再准备其余几种。
+        items:
+          - coding/llm-agent-tool-loop
+          - coding/weighted-data-batcher
+          - coding/prompting-with-llms
+          - coding/ml-config-system
+          - coding/qkv-attention-einsum
+          - coding/grpo-debug
+      - name: 3 · Take-homes
+        name_zh: 3 · Take-home 作业
+        items:
+          - take-home/ml-take-home
+          - take-home/interp-double-descent
+      - name: 4 · General coding used in research loops too
+        name_zh: 4 · 研究岗同样会考的通用编程题
+        items:
+          - coding/image-processing-pipeline
+          - coding/stack-trace-reconstruction
+          - coding/file-deduplication
+          - coding/lru-cache-bugfix-durability
+      - name: 5 · Onsite conversations
+        name_zh: 5 · 现场面的对话轮
+        items:
+          - behavioral/project-deep-dive
+          - behavioral/hiring-manager
+
+  - id: performance
+    title: Performance engineering
+    title_zh: 性能工程
+    intro: >-
+      Performance engineers: a take-home or a coding screen instead of the assessment, then an onsite with performance
+      modelling, systems design framed around performance bounds, and the conversation rounds.
+    intro_zh: 性能工程师：用 take-home 作业或一轮编程电面代替在线测评，现场面考性能建模、围绕性能上界的系统设计，以及几轮对话面。
+    stages:
+      - name: 1 · Take-home
+        name_zh: 1 · Take-home 作业
+        items:
+          - take-home/performance-kernel-optimization
+      - name: 2 · Onsite technical rounds
+        name_zh: 2 · 现场面的技术轮
+        note: Say which bound applies before doing arithmetic, and derive limits from first principles before proposing a design.
+        note_zh: 先说清受哪种上界限制再动手算；先从第一性原理推出极限，再提设计。
+        items:
+          - coding/matmul-performance-modeling
+          - coding/distributed-mode-median
+          - system-design/inference-api-batching
+          - system-design/model-weight-distribution
+      - name: 3 · Conversations
+        name_zh: 3 · 对话面
+        items:
+          - behavioral/recruiter-screen
+          - behavioral/culture-ai-safety
+          - behavioral/project-deep-dive
+          - behavioral/hiring-manager
+
+  - id: fellows
+    title: Anthropic Fellows
+    title_zh: Anthropic Fellows
+    intro: >-
+      Applicants to the Anthropic Fellows Program: proctored assessments without AI or web search, interviews, then a
+      research discussion.
+    intro_zh: 申请 Anthropic Fellows Program 的人：不能用 AI 也不能上网搜索、需要监考的在线测评，接着是面试，最后是一次研究讨论。
+    stages:
+      - name: 1 · Assessments
+        name_zh: 1 · 在线测评
+        items:
+          - coding/oa-dns-resolver
+          - coding/oa-bank-system
+          - coding/oa-inference-engine
+      - name: 2 · Research skills
+        name_zh: 2 · 研究能力
+        items:
+          - take-home/ml-take-home
+          - take-home/interp-double-descent
+          - coding/llm-agent-tool-loop
+          - coding/grpo-debug
+      - name: 3 · Conversations
+        name_zh: 3 · 对话面
+        items:
+          - behavioral/culture-ai-safety
+          - behavioral/recruiter-screen

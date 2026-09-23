@@ -1,0 +1,18 @@
+title: Distributed Mode, Median and Sort
+title_zh: 分布式众数、中位数与排序
+summary: >-
+  Ten ranks each hold a shard of a large integer dataset and can only talk through send/recv/barrier.
+  Compute the global mode with a hash-partitioned shuffle, the global median with a distributed binary
+  search over the value range, and a full distributed sort, minimizing bytes moved across the network
+  rather than bytes read locally.
+summary_zh: "十个计算节点各自持有一份整数数据分片，彼此只能通过 send/recv/barrier 通信。用哈希分区的 shuffle 计算全局众数，用按值域二分的分布式选择计算全局中位数，并实现完整的分布式排序——目标始终是压缩跨节点传输的字节数，而不是本地读取的字节数。"
+category: coding
+kind: Coding · distributed systems, message passing
+kind_zh: 编程 · 分布式系统，消息传递
+roles: [SWE, MLE, Infra Eng]
+topics: [distributed-systems, message-passing, bandwidth, hashing, sorting]
+difficulty: medium
+frequency: medium
+format: 3 parts / 55 min
+stage: [phone-screen, onsite]
+order: 1

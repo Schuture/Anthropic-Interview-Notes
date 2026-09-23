@@ -1,0 +1,18 @@
+title: "Online Assessment: Completing a Small LLM Inference Engine"
+title_zh: 在线测评：补全一个小型 LLM 推理引擎
+summary: >-
+  Complete a small vLLM-style LLM serving engine across five gated levels, working from given,
+  sparsely commented toy-model, block-allocator, sequence and request-queue code: admission and
+  prefill, a budget-constrained decode scheduler, stop conditions and block freeing, hash-keyed
+  prefix caching with LRU eviction, and preemption once the block pool runs out.
+summary_zh: "在五个递进解锁的关卡中，基于已给出、注释稀少的玩具模型、块分配器、序列与请求队列代码，补全一个小型、vLLM 风格的 LLM 服务引擎：请求准入与预填充、带预算约束的解码调度器、停止条件与块释放、以哈希为键并带 LRU 驱逐的前缀缓存，以及块池耗尽时的抢占。"
+category: coding
+kind: Online assessment · 5 levels
+kind_zh: 在线测评 · 5 关
+roles: [Fellows]
+topics: [llm-serving, scheduling, kv-cache, prefix-caching, oop-design]
+difficulty: hard
+frequency: rare
+format: 5 levels / 90 min
+stage: [oa]
+order: 1

@@ -1,0 +1,17 @@
+title: "Take-Home: Sample-Wise Double Descent"
+title_zh: "Take-home：样本维度的双下降"
+summary: >-
+  A linear model's test error, plotted against the number of training samples n at a fixed model
+  size, rises to a peak near the interpolation threshold and falls again on both sides. Reproduce
+  the curve, explain the peak from the design matrix's singular values, and remove it with ridge.
+summary_zh: "固定模型规模、只改变训练样本数 n 时，线性模型的测试误差会在插值阈值附近骤然升高，两侧则重新下降。复现这条曲线，从设计矩阵的奇异值出发解释这个峰值，再用岭回归将其消除。"
+category: take-home
+kind: Take-home · experiment and write-up
+kind_zh: Take-home · 实验与报告
+roles: [RE, RS]
+topics: [double-descent, linear-regression, bias-variance, ridge-regression, random-matrix-theory]
+difficulty: hard
+frequency: rare
+format: 4 hours
+stage: [take-home]
+order: 1

@@ -1,0 +1,18 @@
+title: Distributing Model Weights to a GPU Fleet
+title_zh: 向 GPU 集群分发模型权重
+summary: >-
+  Design the fastest way to get a several-hundred-GB checkpoint from object storage onto every host
+  in a GPU fleet: derive the bandwidth lower bound, evolve from a naive pull and tree broadcast to a
+  chunked peer-to-peer swarm, and handle integrity, versioning, stragglers and failures, and rate
+  limiting against live serving traffic.
+summary_zh: "设计把数百 GB 的模型权重从对象存储尽快分发到 GPU 集群每台主机的方案：推导带宽下界，从朴素拉取、树状广播演化到分块的对等群发（swarm），并处理完整性、版本管理、掉队者与故障，以及分发流量与在线推理流量之间的限流。"
+category: system-design
+kind: System design
+kind_zh: 系统设计
+roles: [MLE, Infra Eng, SWE]
+topics: [bandwidth, peer-to-peer, chunking, versioning, readiness]
+difficulty: hard
+frequency: high
+format: 55 min
+stage: [phone-screen, onsite]
+order: 2

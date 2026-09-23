@@ -1,0 +1,17 @@
+title: Prompt Playground (Product and Data Design)
+title_zh: 提示词 Playground（产品与数据设计）
+summary: >-
+  Design the product behind a prompt-engineering playground on top of a fixed browser/server/database
+  deployment: the schema and API for prompts, immutable versions and runs, sharing with role-based
+  permissions, and how very large prompts, concurrent edits and cost control are handled.
+summary_zh: "设计一个提示词工程 Playground 产品：在固定的浏览器、服务器、数据库架构之上，设计提示词、不可变版本与运行记录的数据模型与 API、基于角色的分享权限，以及超大提示词、并发编辑与成本控制的处理方式。"
+category: system-design
+kind: Product and API design
+kind_zh: 产品与 API 设计
+roles: [SWE, MLE]
+topics: [schema-design, versioning, permissions, streaming, concurrency-control, product-design]
+difficulty: medium
+frequency: high
+format: 55 min
+stage: [onsite]
+order: 4

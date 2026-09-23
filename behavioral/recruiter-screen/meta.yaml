@@ -1,0 +1,17 @@
+title: 'Recruiter Screen: Motivation, Mission and Logistics'
+title_zh: HR 初筛：动机、使命与流程事项
+summary: >-
+  A 30-minute call with a recruiter, not an engineer, that opens on why you want to work at Anthropic and
+  gives AI safety and Anthropic's mission a substantial share of the time at first-conversation depth,
+  before covering your background and the logistics of the rest of the process: work authorization,
+  timeline, compensation, and team fit.
+summary_zh: "一场与招聘联系人的 30 分钟通话，对方不是工程师。开场即问为什么想加入 Anthropic，随后用相当篇幅在第一次对话应有的深度上讨论 AI 安全与 Anthropic 的使命，最后再过一遍背景经历，以及工作许可、时间线、薪资和团队匹配等流程事项。"
+category: behavioral
+kind: Behavioral
+kind_zh: 行为面
+roles: [All]
+topics: [why-anthropic, ai-safety, mission, background, compensation]
+frequency: very-high
+stage: [recruiter-screen]
+format: 30 min
+order: 2

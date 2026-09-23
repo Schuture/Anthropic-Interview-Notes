@@ -1,0 +1,17 @@
+title: ML Experiment Configuration System
+title_zh: 机器学习实验配置系统
+summary: >-
+  Configs are named nested dicts in an in-memory store. Compose them through bases with a deep
+  merge and a delete marker, apply typed command-line overrides and interpolation, validate the
+  result against a dataclass schema collecting every error, then freeze it and hash it for reruns.
+summary_zh: "配置是内存中按名字存放的嵌套字典。先通过 base 做深度合并与删除标记完成组合，再应用带类型解析的命令行覆盖和插值，然后对照 dataclass 模式收集全部校验错误，最后冻结配置并计算哈希以便复现实验。"
+category: coding
+kind: Coding · configuration systems, validation
+kind_zh: 编程 · 配置系统，校验
+roles: [RE, RS, MLE]
+topics: [deep-merge, cycle-detection, cli-overrides, schema-validation, reproducibility]
+difficulty: hard
+frequency: low
+format: 4 parts / 55 min
+stage: [phone-screen]
+order: 9

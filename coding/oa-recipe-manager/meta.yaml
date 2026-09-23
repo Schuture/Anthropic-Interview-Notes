@@ -1,0 +1,18 @@
+title: "Online Assessment: Recipe Manager"
+title_zh: 在线测评：菜谱管理系统
+summary: >-
+  Build a recipe store across four gated levels: CRUD with case-insensitive name uniqueness, listings
+  and search sorted by ingredient count with a stated tie-break, an owner-and-editor permission system
+  that gates every edit and delete, and a version history whose rollback appends rather than truncates
+  and never touches who owns or may edit a recipe.
+summary_zh: "分四关递进解锁地搭建一个菜谱存储：先是名称大小写不敏感去重的增删改查，再是按原料数量排序、有明确并列规则的列表与搜索，然后是拥有者与被授权编辑者的权限系统（每次编辑和删除都要经过它），最后是版本历史与回滚——回滚只追加新版本而不截断历史，也不改变菜谱的拥有者或编辑者。"
+category: coding
+kind: Online assessment · 4 levels
+kind_zh: 在线测评 · 4 关
+roles: [SWE, MLE]
+topics: [oop-design, case-folding, sorting, permissions, versioning]
+difficulty: medium
+frequency: medium
+format: 4 levels / 90 min
+stage: [oa]
+order: 5

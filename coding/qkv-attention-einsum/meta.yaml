@@ -1,0 +1,17 @@
+title: Multi-Head Attention with einsum
+title_zh: 用 einsum 实现多头注意力
+summary: >-
+  Implement scaled dot-product attention and causal multi-head self-attention in NumPy using
+  np.einsum for every contraction, then find and fix four planted bugs in a NumPy layer
+  normalization plus attention block.
+summary_zh: "用 np.einsum 实现每一次张量收缩，写出缩放点积注意力和带因果掩码的多头自注意力，然后在一段 NumPy 实现的层归一化加注意力代码里找出并修复四个埋好的 bug。"
+category: coding
+kind: Coding with derivation · NumPy
+kind_zh: 编程（含数学推导）· NumPy
+roles: [MLE, RE, RS]
+topics: [attention, einsum, multi-head, masking, numerical-stability, debugging]
+difficulty: hard
+frequency: low
+format: 3 parts / 55 min
+stage: [phone-screen]
+order: 7

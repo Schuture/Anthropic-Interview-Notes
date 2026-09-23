@@ -1,0 +1,17 @@
+title: Weighted Data Batcher with Checkpointing
+title_zh: 带断点续跑的加权数据批采样器
+summary: >-
+  Build a DataBatcher that draws each batch from several named datasets in proportion to integer
+  weights, checkpoints and resumes so a paused run continues with byte-identical batches, and handles
+  batch sizes that do not divide evenly across the weights.
+summary_zh: "实现一个 DataBatcher：按整数权重比例从多个命名数据集中抽取每个 batch，支持保存与恢复进度、使续跑产生与不中断时完全一致的 batch，并处理权重之和无法整除 batch_size 的情况。"
+category: coding
+kind: Coding · sampling, checkpointing
+kind_zh: 编程 · 采样，断点续训
+roles: [MLE, RE, RS]
+topics: [sampling, checkpointing, iterators, data-loading]
+difficulty: hard
+frequency: medium
+format: 3 parts / 55 min
+stage: [phone-screen, onsite]
+order: 7

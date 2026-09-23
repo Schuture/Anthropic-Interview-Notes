@@ -1,0 +1,18 @@
+title: Telemetry Pipeline with Schema Evolution
+title_zh: 带 schema 演进的遥测数据管道
+summary: >-
+  A fleet of deployed clients streams telemetry events into a pipeline that buffers, deduplicates, and
+  stores them raw and curated for dashboards, ad hoc queries, and alerting under field-level access
+  control; a schema registry and canonical-name mapping table fold already-deployed old clients'
+  inconsistent telemetry_name variants into one metric without losing history or merging unrelated ones.
+summary_zh: "大量已部署客户端持续上报遥测事件，管道对其缓冲、去重并分别存入原始与整理后的存储，供仪表盘、即席查询和告警在字段级访问控制下使用；schema 注册表与规范名称映射表将已部署旧客户端不一致的 telemetry_name 变体归并为同一指标，同时不丢失历史数据、不错误合并不同指标。"
+category: system-design
+kind: System design
+kind_zh: 系统设计
+roles: [SWE, Data Eng, Infra Eng]
+topics: [ingestion, schema-evolution, stream-processing, partitioning, access-control, pii]
+difficulty: hard
+frequency: low
+format: 55 min
+stage: [phone-screen, onsite]
+order: 1

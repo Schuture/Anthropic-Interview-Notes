@@ -1,0 +1,17 @@
+title: "Prompting and Engineering with LLMs: Structured Output and Evaluation"
+title_zh: LLM 提示与工程：结构化输出与评测
+summary: >-
+  Design a system prompt and a robust parser that turns a language model's reply into a validated
+  support-ticket label, find four bugs in a given evaluation pipeline, then use error analysis and a
+  paired comparison to decide whether a prompt change is a real improvement or noise.
+summary_zh: "设计一个系统提示词和一个健壮的解析器，把语言模型的回复转成经过校验的工单标签；找出给定评测流水线中的四个 bug；再用错误分析和配对比较，判断某次提示词改动到底是真正的提升，还是噪声。"
+category: coding
+kind: Coding · prompting and evaluation
+kind_zh: 编程 · 提示词与评测
+roles: [RE, RS, MLE]
+topics: [prompt-design, structured-output, parsing, evaluation, error-analysis]
+difficulty: medium
+frequency: low
+format: 3 parts / 55 min
+stage: [phone-screen]
+order: 8
