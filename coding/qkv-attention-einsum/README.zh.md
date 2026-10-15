@@ -140,9 +140,7 @@ x[0] = [[1, 0],
 `(批次, 查询)` 一个输出向量。在 `np.exp` 之前减去行最大值，在精确算术下不改变 softmax 的结果：对任何不依赖被求和下标
 $j$ 的常数 $m$，
 
-```math
-\frac{e^{s_j - m}}{\sum_k e^{s_k - m}} = \frac{e^{-m}e^{s_j}}{e^{-m}\sum_k e^{s_k}} = \frac{e^{s_j}}{\sum_k e^{s_k}},
-```
+$$\frac{e^{s_j - m}}{\sum_k e^{s_k - m}} = \frac{e^{-m}e^{s_j}}{e^{-m}\sum_k e^{s_k}} = \frac{e^{s_j}}{\sum_k e^{s_k}},$$
 
 同时让每个指数都 $\le 0$，`np.exp` 就不会溢出。整行都被掩码时，每个得分都是 $-\infty$，行最大值也是
 $-\infty$，$`-\infty - (-\infty)`$ 是 `nan`；实现里把这一行的 $m$ 换成 $0$ 再相减，这一行的每个元素仍然是
@@ -188,11 +186,7 @@ Part 1 的收缩一样，只是多了一个类似批次的轴 `h`；对 $V$ 的�
 **$`1/\sqrt{d_{\text{head}}}`$ 这个定标。** 设 $q, k \in \mathbb{R}^{d_{\text{head}}}$ 的各分量都是均值 $0$、方差
 $1$ 的独立随机变量，并且每个 $q_i$ 都与每个 $k_j$ 独立。于是 $q \cdot k = \sum_{i=0}^{d_{\text{head}}-1} q_ik_i$，
 
-```math
-\mathrm{E}[q \cdot k] = \sum_i \mathrm{E}[q_i]\,\mathrm{E}[k_i] = 0, \qquad
-\mathrm{Var}(q\cdot k) = \mathrm{E}\Bigl[\bigl(\textstyle\sum_i q_ik_i\bigr)^2\Bigr]
-= \sum_i\sum_j \mathrm{E}[q_ik_iq_jk_j].
-```
+$$\mathrm{E}[q \cdot k] = \sum_i \mathrm{E}[q_i]\\,\mathrm{E}[k_i] = 0, \qquad \mathrm{Var}(q\cdot k) = \mathrm{E}\Bigl[\bigl(\textstyle\sum_i q_ik_i\bigr)^2\Bigr] = \sum_i\sum_j \mathrm{E}[q_ik_iq_jk_j].$$
 
 当 $i \ne j$ 时，$`q_i, k_i, q_j, k_j`$ 是四个相互独立、均值为零的变量，所以
 $\mathrm{E}[q_ik_iq_jk_j] = \mathrm{E}[q_i]\mathrm{E}[k_i]\mathrm{E}[q_j]\mathrm{E}[k_j] = 0$；当

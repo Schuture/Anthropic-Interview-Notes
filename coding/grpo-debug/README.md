@@ -291,10 +291,7 @@ $\log\pi_{\theta_{\mathrm{old}}}(o_i\mid a,b)$ (a detached constant stored earli
 $\rho_i = \exp(0) = 1$. Writing $x(\theta) = \log\pi_\theta(o_i\mid a,b)$ and $c$ for the detached
 constant, $\rho_i(\theta) = \exp(x(\theta) - c)$, so
 
-```math
-\frac{\partial \rho_i}{\partial\theta} = \exp(x(\theta) - c)\cdot\frac{\partial x}{\partial\theta}
-= \rho_i \cdot \nabla_\theta\log\pi_\theta(o_i\mid a,b),
-```
+$$\frac{\partial \rho_i}{\partial\theta} = \exp(x(\theta) - c)\cdot\frac{\partial x}{\partial\theta} = \rho_i \cdot \nabla\_\theta\log\pi\_\theta(o_i\mid a,b),$$
 
 which at $\rho_i = 1$ gives $\partial(\rho_i A_i)/\partial\theta = A_i\nabla_\theta\log\pi_\theta(o_i\mid a,b)$,
 exactly the REINFORCE term. Since $\rho_i = 1 \in [1-\varepsilon, 1+\varepsilon]$, the unclipped and

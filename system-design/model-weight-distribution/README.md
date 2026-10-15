@@ -91,9 +91,7 @@ repository side).
 A 10 Gbps link moves $B = 10 \times 10^9 / 8 = 1.25 \times 10^9$ bytes/s. Moving one checkpoint's worth
 of bytes over one such link therefore takes
 
-```math
-S / B = 500 \times 10^9 / 1.25 \times 10^9 = 400 \text{ s.}
-```
+$$S / B = 500 \times 10^9 / 1.25 \times 10^9 = 400 \text{ s.}$$
 
 **Lower bound, full-duplex.** Two independent arguments both land on $S/B$. First, every host must
 receive all $S$ bytes and its download rate is capped at $B$ even if the rest of the network is idle,
@@ -110,11 +108,7 @@ checkpoint, so in the best case $d_i = S$ (no host ever receives a redundant byt
 $u_i \le BT - S$. Every byte any host receives was sent by exactly one sender — the repository or
 another host — so total bytes sent must cover the $NS$ bytes of demand:
 
-```math
-NS \;\le\; \underbrace{BT}_{\text{repository}} \;+\; \underbrace{N(BT - S)}_{\text{hosts' uploads}}
-\quad\Longrightarrow\quad
-T \;\ge\; \frac{2NS}{B(N+1)}.
-```
+$$NS \\;\le\\; \underbrace{BT}\_{\text{repository}} \\;+\\; \underbrace{N(BT - S)}\_{\text{hosts' uploads}} \quad\Longrightarrow\quad T \\;\ge\\; \frac{2NS}{B(N+1)}.$$
 
 (The repository never downloads, so its full $B$ is available for sending under either link variant.)
 As $N \to \infty$ this tends to $2S/B$: on a shared link, every byte a host relays costs it twice —
@@ -128,9 +122,7 @@ sender and must push $N$ full copies through its one capped link — whether it 
 another at full rate or all $N$ at once by splitting its bandwidth $N$ ways, the total bytes it must
 push is the same, $NS$:
 
-```math
-T_{\text{naive}} = N \cdot S / B.
-```
+$$T\_{\text{naive}} = N \cdot S / B.$$
 
 $N=100$: $100 \times 400 = 40{,}000$ s ($\approx 11.1$ hours). $N=1{,}000$: $1{,}000 \times 400 =
 400{,}000$ s ($\approx 4.6$ days) — unworkable at either scale, and worsening in direct proportion to
@@ -145,9 +137,7 @@ rate, or all at once at rate $B/k$ each — moves $k$ files' worth of bytes out 
 way, taking $k \cdot S/B$; each additional level adds that much to the completion time. With depth $D$
 (the smallest $D$ with $k + k^2 + \dots + k^D \ge N$, the point by which every host is placed):
 
-```math
-T_{\text{tree,SAF}} = D \cdot k \cdot S/B.
-```
+$$T\_{\text{tree,SAF}} = D \cdot k \cdot S/B.$$
 
 Approximating $D \approx \ln N / \ln k$, minimizing $D \cdot k$ over $k$ means minimizing $k/\ln k$,
 whose derivative $(\ln k - 1)/(\ln k)^2$ is zero at $k = e \approx 2.718$ — branching factors of 2 and
@@ -165,9 +155,7 @@ divided, in some rotation, across its $k$ children, so any one child receives ne
 share of the time — an effective download rate of $B/k$, giving that child $S/(B/k) = k \cdot S/B$ once
 its parent starts feeding it. With $c$ small next to $S$ the one-time depth term is negligible, so
 
-```math
-T_{\text{tree,pipelined}} \approx k \cdot S/B,
-```
+$$T\_{\text{tree,pipelined}} \approx k \cdot S/B,$$
 
 independent of $N$ — pipelining shrinks away the part of the cost that depended on depth. At $k=2$
 this is $800$ s regardless of fleet size: a large improvement on the store-and-forward tree and no
@@ -181,9 +169,7 @@ chunk transfer time $t_c = c/B$, the repository emits chunk $i$ at $(i-1)t_c$, a
 more $t_c$ of delay, so chunk $i$ reaches the $j$-th host in the chain at $(i+j-1)t_c$. The last chunk
 ($i=C$) reaching the last host ($j=N$) sets the completion time:
 
-```math
-T_{\text{chain}} = (C + N - 1) \cdot t_c = \underbrace{C \cdot t_c}_{=\,S/B} + (N-1)\cdot c/B.
-```
+$$T\_{\text{chain}} = (C + N - 1) \cdot t_c = \underbrace{C \cdot t_c}\_{=\\,S/B} + (N-1)\cdot c/B.$$
 
 At $c = 50$ MB ($C = 10{,}000$ chunks, $t_c = 40$ ms): $N=100$ gives $400 + 99 \times 0.04 = 403.96$ s
 — one percent over the bound. $N=1{,}000$ gives $400 + 999 \times 0.04 = 439.96$ s — about ten percent

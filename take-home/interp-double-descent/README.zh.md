@@ -124,33 +124,23 @@ $n$ 的取值范围从远低于 $D = 100$ 到远高于它，网格在 $D$ 附近
 
 先固定训练输入 $X$，只让标签噪声 $\varepsilon$ 保持随机。把 $y = Xw^\star + \varepsilon$ 代入 $\hat w = X^{+}y$，得到 $\hat w = X^{+}Xw^\star + X^{+}\varepsilon$；而 $X^{+}X = P_X$ 正是投影到 $X$ 行空间上的正交投影算子（当 $X$ 满列秩时它就是单位阵），于是
 
-```math
-\hat w = P_X w^\star + X^{+}\varepsilon.
-```
+$$\hat w = P_X w^\star + X^{+}\varepsilon.$$
 
 因此 $E_\varepsilon[\hat w \mid X] = P_X w^\star$，$`\mathrm{Cov}_\varepsilon(\hat w \mid X) = \sigma^2 X^{+}(X^{+})^\top`$。超额测试误差在给定 $X$ 时的*偏差–方差分解*（bias–variance decomposition），就是把它对噪声取期望后拆成两部分：一部分即便在这个 $n$ 下有无穷多数据也不会消失，另一部分则完全由噪声驱动：
 
-```math
-E_\varepsilon\bigl[\|\hat w - w^\star\|^2 \mid X\bigr] = \underbrace{\|(I - P_X)w^\star\|^2}_{\text{bias}(X)^2} + \underbrace{\sigma^2 \mathrm{tr}\bigl(X^{+}(X^{+})^\top\bigr)}_{\text{variance}(X)}.
-```
+$$E\_\varepsilon\bigl[\\|\hat w - w^\star\\|^2 \mid X\bigr] = \underbrace{\\|(I - P_X)w^\star\\|^2}\_{\text{bias}(X)^2} + \underbrace{\sigma^2 \mathrm{tr}\bigl(X^{+}(X^{+})^\top\bigr)}\_{\text{variance}(X)}.$$
 
 由奇异值分解写出 $X^{+} = V\Sigma^{+}U^\top$，则 $X^{+}(X^{+})^\top = V(\Sigma^{+})^2 V^\top$，它的迹就是 $\Sigma^{+}$ 各元素的平方和——也就是 $X$ 的非零奇异值的 $1/\sigma_i^2$ 之和：
 
-```math
-\text{variance}(X) = \sigma^2 \sum_i \frac{1}{\sigma_i^2}.
-```
+$$\text{variance}(X) = \sigma^2 \sum_i \frac{1}{\sigma_i^2}.$$
 
 上面每条曲线本来就已经对重新抽取的训练集取过平均，所以每个 $n$ 处报告的测试误差就是 $E_X[\text{bias}(X)^2] + E_X[\text{variance}(X)]$。对各向同性的 $X$，这两项都有闭式解。当 $n \le d$ 时，$`X`$ 的行空间是 $\mathbb{R}^d$ 中一个均匀随机的 $n$ 维子空间；一个固定向量的平方长度中，期望有 $n/d$ 这一比例落在这样的子空间内，所以 $`E_X[\text{bias}(X)^2] = (1 - n/d)\|w^\star\|^2`$——一旦 $n \ge d$，每个方向都可达，这一项恰好为 $0$。对方差项而言，$`X^\top X`$（当 $n > d$ 时）或 $XX^\top$（当 $n < d$ 时）是一个 Wishart 矩阵——由 $\max(n,d)$ 个独立的标准高斯向量外积之和构成——它的逆矩阵有一个经典的闭式均值，给出
 
-```math
-E_X[\text{variance}(X)] = \sigma^2 \times \begin{cases} n / (d - n - 1) & n < d \\ d / (n - d - 1) & n > d. \end{cases}
-```
+$`\displaystyle E_X[\text{variance}(X)] = \sigma^2 \times \begin{cases} n / (d - n - 1) & n < d \\ d / (n - d - 1) & n > d. \end{cases}`$
 
 只要 $n \ne d$，两项都是有限的，但方差项的分母会在 $n$ 从两侧趋向 $d$ 时趋于零：这正是峰值所在。原因在于最小奇异值 $\sigma_{\min}(X)$，它是 $\sum_i 1/\sigma_i^2$ 中最大的那一项加数。对于元素独立同分布于 $N(0,1)$ 的 $X$，*Marchenko–Pastur 定律*指出：当 $n, d \to \infty$ 且 $d/n \to \gamma \le 1$ 时，$`X^\top X / n`$ 的特征值会铺满区间 $[(1-\sqrt{\gamma})^2, (1+\sqrt{\gamma})^2]$；其下边界 $(1 - \sqrt{d/n})^2$，是谱的主体能达到的最小值。当 $n \to d$ 时，$`\gamma \to 1`$，这个下边界滑向 $0$，于是 $X^\top X$ 的最小特征值量级就是 $n(1-\sqrt{d/n})^2 = (\sqrt n - \sqrt d)^2$，即
 
-```math
-\sigma_{\min}(X) \approx |\sqrt n - \sqrt d|.
-```
+$$\sigma\_{\min}(X) \approx |\sqrt n - \sqrt d|.$$
 
 $n$ 每向 $d$ 靠近一步，最小奇异值就被推得更接近 $0$，它的平方倒数就被推向无穷：无论 $\sigma$ 多小，训练标签的噪声都会被 $X$ 中接近奇异的方向无限放大。这个近似在远离边缘的地方成立，却恰恰在峰值最高的地方失效：就在 $n = d$ 处，$`\sigma_{\min}`$ 不再集中到任何单一数值附近——它服从一个尺度为 $1/\sqrt d$ 的极限分布，并且在 $0$ 附近有任意接近的质量——所以 $E_X[\text{variance}(X)]$ 在 $n = d$ 处确实是无界的，而不只是很大；对任何一组固定的训练集抽样取平均，结果都会被其中恰好接近奇异的少数几次抽样主导。这就是为什么第 1 部分中的峰值在这一组固定种子下算出的是 $1{,}549.7$，而不是实验会收敛到的一个稳定数字。
 
@@ -209,23 +199,17 @@ mp_check = {n: (mean_min_singular_value(n, D, 30, 40_000 * n), abs(np.sqrt(n) - 
 
 用同样的奇异值分解 $X = U\Sigma V^\top$，把 $w^\star$ 分解成它在行空间中的分量 $\alpha = V^\top w^\star$ 和正交余量 $w^\star_\perp$（只有当 $X$ 不满列秩时才存在），岭回归的估计可以写成 $`\hat w_\lambda = V\,\mathrm{diag}\bigl(\sigma_i^2/(\sigma_i^2+\lambda)\bigr)\alpha + V\,\mathrm{diag}\bigl(\sigma_i/(\sigma_i^2+\lambda)\bigr)U^\top\varepsilon`$，从而
 
-```math
-E_\varepsilon\bigl[\|\hat w_\lambda - w^\star\|^2 \mid X\bigr] = \underbrace{\|w^\star_\perp\|^2 + \sum_i \Bigl(\frac{\lambda}{\sigma_i^2+\lambda}\Bigr)^2 \alpha_i^2}_{\text{bias}_\lambda(X)^2} + \underbrace{\sigma^2 \sum_i \frac{\sigma_i^2}{(\sigma_i^2+\lambda)^2}}_{\text{variance}_\lambda(X)}.
-```
+$$E\_\varepsilon\bigl[\\|\hat w\_\lambda - w^\star\\|^2 \mid X\bigr] = \underbrace{\\|w^\star\_\perp\\|^2 + \sum_i \Bigl(\frac{\lambda}{\sigma_i^2+\lambda}\Bigr)^2 \alpha_i^2}\_{\text{bias}\_\lambda(X)^2} + \underbrace{\sigma^2 \sum_i \frac{\sigma_i^2}{(\sigma_i^2+\lambda)^2}}\_{\text{variance}\_\lambda(X)}.$$
 
 当 $\lambda \to 0$ 时，这恰好化简为第 2 部分的公式（$`\lambda`$ 带来的偏差项消失，且 $\sigma_i^2/\sigma_i^4 = 1/\sigma_i^2$）。而当 $\lambda > 0$ 时，方差的每一项加数都是有界的：由均值不等式（AM–GM），对任意 $\sigma_i \ge 0$ 都有 $\sigma_i^2/(\sigma_i^2+\lambda)^2 \le 1/(4\lambda)$（在 $\sigma_i^2 = \lambda$ 处取到最大值），所以无论 $\sigma_{\min}(X)$ 多小，都有 $`\text{variance}_\lambda(X) \le \sigma^2 \min(n,d)/(4\lambda)`$。岭回归用一点可控的偏差增加——收缩项 $\lambda/(\sigma_i^2+\lambda)$ 把每个方向都往 $0$ 轻轻拉一点——换来对方差的硬上限，彻底消除了 $1/\sigma_i^2$ 的爆炸。在远离阈值的地方，这笔交易只会白白增加偏差，因为那里未加约束的方差本来就很小；而恰恰在 $n = d$ 附近，未加约束的方差原本会大得离谱，这笔交易才真正划算。
 
 $\lambda$ 该取多大？只为了选 $\lambda$ 这一个目的，不妨假设 $w^\star$ 本身是从 $N(0, \tau^2 I_d)$ 中抽出的，并且与标签噪声独立。那么给定 $(X, y)$ 时 $w^\star$ 的后验均值——也就是在这个先验下使期望平方误差最小的估计量——恰好就是
 
-```math
-E[w^\star \mid X, y] = \bigl(X^\top X + \tfrac{\sigma^2}{\tau^2}I_d\bigr)^{-1}X^\top y,
-```
+$$E[w^\star \mid X, y] = \bigl(X^\top X + \tfrac{\sigma^2}{\tau^2}I_d\bigr)^{-1}X^\top y,$$
 
 也就是 $\lambda = \sigma^2/\tau^2$ 的岭回归，这对任意 $n$ 和 $d$ 都精确成立，而不只是渐近成立。从该先验中抽出的向量满足 $`E\|w^\star\|^2 = d\tau^2`$，所以用*实际取到*的 $`\|w^\star\|^2`$ 作为 $d\tau^2$ 的代入估计，就给出
 
-```math
-\lambda^\star = \frac{\sigma^2}{\tau^2} \approx \frac{\sigma^2 d}{\|w^\star\|^2}.
-```
+$$\lambda^\star = \frac{\sigma^2}{\tau^2} \approx \frac{\sigma^2 d}{\\|w^\star\\|^2}.$$
 
 这只在对先验取平均的意义下精确，对某个固定的 $w^\star$ 并不精确——但 $`\|w^\star\|^2/d`$ 会随 $d$ 增大而集中到 $\tau^2$ 附近，$`d = 100`$ 已经足够大，能让这个代入估计足够接近。这里 $`\|w^\star\|^2 \approx 93.23`$，给出 $\lambda^\star \approx 1.073$。
 

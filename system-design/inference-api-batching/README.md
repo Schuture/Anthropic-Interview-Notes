@@ -96,9 +96,7 @@ $2{,}000$/s offline.
 here; part (e) revisits this when a batch spans more than one GPU). At 100% fill, one replica
 finishes $64 / 0.1 = 640$ requests/s, so meeting all $10{,}000$/s needs at least
 
-```math
-\left\lceil \frac{10{,}000 \times 0.1}{64 \times 1} \right\rceil = \lceil 15.625 \rceil = 16 \text{ replicas.}
-```
+$$\left\lceil \frac{10{,}000 \times 0.1}{64 \times 1} \right\rceil = \lceil 15.625 \rceil = 16 \text{ replicas.}$$
 
 That floor is not a target to provision at: it leaves almost no spare aggregate capacity ($16$
 replicas supply $16 \times 640 = 10{,}240$ requests/s against $10{,}000$/s of demand, and losing even
@@ -139,10 +137,7 @@ $12 \times n_{\text{layers}} \times d_{\text{model}}^2$ approximation is
 $12 \times 40 \times 5{,}120^2 \approx 12.6$ billion, so weights occupy about $12.6\text{B} \times 2
 \approx 25.2$ GB. A key/value cache entry stores one key and one value vector per layer per KV head:
 
-```math
-\text{bytes/token} = 2 \times n_{\text{layers}} \times n_{\text{kv\_heads}} \times \text{head\_dim} \times \text{bytes/elem}
-= 2 \times 40 \times 8 \times 128 \times 2 = 163{,}840 \approx 0.164 \text{ MB.}
-```
+$$\text{bytes/token} = 2 \times n\_{\text{layers}} \times n\_{\text{kv\\\_heads}} \times \text{head\\\_dim} \times \text{bytes/elem} = 2 \times 40 \times 8 \times 128 \times 2 = 163{,}840 \approx 0.164 \text{ MB.}$$
 
 (Full multi-head attention, 40 KV heads instead of 8, would multiply this by 5 to 0.82 MB/token —
 grouped-query attention is what keeps the cache this small.) On an 80 GB GPU, after 25.2 GB of
