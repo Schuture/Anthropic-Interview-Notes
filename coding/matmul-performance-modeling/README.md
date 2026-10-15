@@ -91,18 +91,18 @@ scheme is used in practice anyway.
 
 ### Part 4 — Sharding a feed-forward network
 
-A feed-forward network computes $Y = \operatorname{act}(XW_1)W_2$ with $X \in \mathbb{R}^{T\times d}$,
-$W_1 \in \mathbb{R}^{d\times f}$, $\operatorname{act}(XW_1) \in \mathbb{R}^{T\times f}$,
+A feed-forward network computes $Y = \mathrm{act}(XW_1)W_2$ with $X \in \mathbb{R}^{T\times d}$,
+$W_1 \in \mathbb{R}^{d\times f}$, $\mathrm{act}(XW_1) \in \mathbb{R}^{T\times f}$,
 $W_2 \in \mathbb{R}^{f\times d}$, $Y \in \mathbb{R}^{T\times d}$, with $d = 8{,}192$ and $f = 32{,}768$
-as in Part 2, and $\operatorname{act}$ a pointwise nonlinearity. Counting multiply-accumulates as two
-FLOPs and excluding $\operatorname{act}$ and any bias, this costs $4Tdf$ FLOPs, and the two weights
+as in Part 2, and $\mathrm{act}$ a pointwise nonlinearity. Counting multiply-accumulates as two
+FLOPs and excluding $\mathrm{act}$ and any bias, this costs $4Tdf$ FLOPs, and the two weights
 together occupy $2dfs$ bytes ($s = 2$ for bf16). Consider two ways to split this block across $p$
 devices; assume $p$ divides $f$ (tensor sharding) or $T$ (token sharding) exactly, as it does for every
 $p$ used below.
 
 *Tensor sharding*: $W_1$'s $f$ columns and $W_2$'s $f$ rows are each split into $p$ equal shards, one
 per device; $X$ is replicated on every device. Device $i$ computes $H_i =
-\operatorname{act}(XW_{1,i}) \in \mathbb{R}^{T\times f/p}$ locally, then a partial output
+\mathrm{act}(XW_{1,i}) \in \mathbb{R}^{T\times f/p}$ locally, then a partial output
 $Y_i = H_iW_{2,i} \in \mathbb{R}^{T\times d}$, also locally. The true $Y = \sum_i Y_i$ is formed by an
 all-reduce of the $p$ partial outputs, each of logical size $T \times d$ at $s_c$ bytes/element for the
 communicated values ($s_c = s = 2$ unless stated otherwise); an ideal ring all-reduce has every device
@@ -138,13 +138,21 @@ FLOP/byte, fixed for every part below.
 
 **Shape A** works the formulas once in full. With $(m,k,n) = (8, 4{,}096, 4{,}096)$:
 
-$$\text{FLOPs} = 2\cdot 8\cdot 4{,}096\cdot 4{,}096 = 268{,}435{,}456,$$
+```math
+\text{FLOPs} = 2\cdot 8\cdot 4{,}096\cdot 4{,}096 = 268{,}435{,}456,
+```
 
-$$\text{bytes} = 2\bigl(8\cdot4{,}096 + 4{,}096\cdot4{,}096 + 8\cdot4{,}096\bigr) = 2\cdot 16{,}842{,}752 = 33{,}685{,}504,$$
+```math
+\text{bytes} = 2\bigl(8\cdot4{,}096 + 4{,}096\cdot4{,}096 + 8\cdot4{,}096\bigr) = 2\cdot 16{,}842{,}752 = 33{,}685{,}504,
+```
 
-$$I = \frac{268{,}435{,}456}{33{,}685{,}504} \approx 7.97 \text{ FLOP/byte} < 208 = I^\star \implies \text{memory-bound},$$
+```math
+I = \frac{268{,}435{,}456}{33{,}685{,}504} \approx 7.97 \text{ FLOP/byte} < 208 = I^\star \implies \text{memory-bound},
+```
 
-$$t = \max\!\left(\frac{268{,}435{,}456}{312\times10^{12}},\ \frac{33{,}685{,}504}{1.5\times10^{12}}\right) = \max(0.86,\ 22.46)\ \mu s = 22.46\ \mu s.$$
+```math
+t = \max\!\left(\frac{268{,}435{,}456}{312\times10^{12}},\ \frac{33{,}685{,}504}{1.5\times10^{12}}\right) = \max(0.86,\ 22.46)\ \mu s = 22.46\ \mu s.
+```
 
 The same formulas, applied to B, C and D:
 
@@ -160,42 +168,46 @@ the regime flips from memory- to compute-bound. C and D show the same flip along
 same $m=n=4{,}096$: growing $k$ from 64 to 4,096 raises intensity from 62.06 to 1,365.33. Both are
 instances of one fact, proved next for every variable, not only $m$ and $k$.
 
-For fixed $k,n$, intensity as a function of $m$ is $I(m) = \dfrac{2mkn}{s(m(k+n)+kn)} = \dfrac{2kn}{s}\, g(m)$
+For fixed $k,n$, intensity as a function of $m$ is $`I(m) = \dfrac{2mkn}{s(m(k+n)+kn)} = \dfrac{2kn}{s}\, g(m)`$
 with $g(m) = \dfrac{m}{m(k+n)+kn}$. Then
 
-$$g'(m) = \frac{\bigl(m(k+n)+kn\bigr) - m(k+n)}{\bigl(m(k+n)+kn\bigr)^{2}} = \frac{kn}{\bigl(m(k+n)+kn\bigr)^{2}} > 0,$$
+```math
+g'(m) = \frac{\bigl(m(k+n)+kn\bigr) - m(k+n)}{\bigl(m(k+n)+kn\bigr)^{2}} = \frac{kn}{\bigl(m(k+n)+kn\bigr)^{2}} > 0,
+```
 
 so $I$ is strictly increasing in $m$, from $I(0) = 0$ towards $\lim_{m\to\infty} I(m) = 2kn/(s(k+n))$ —
 the harmonic mean of $k$ and $n$, divided by $s$ — approached but never reached. Bytes
 $s(mk+kn+mn)$ and FLOPs $2mkn$ are each a symmetric function of $(m,k,n)$ — the elementary symmetric sum
 of the three pairwise products, and twice their triple product — so $I(m,k,n)$ is symmetric too, and the
-argument above applies unchanged with any one of $m, k, n$ standing in for "$m$" and the other two for
-"$k, n$". Growing any single one of $m, k, n$, holding the other two fixed, strictly increases the
+argument above applies unchanged with any one of $m, k, n$ standing in for "$`m`$" and the other two for
+"$`k, n`$". Growing any single one of $m, k, n$, holding the other two fixed, strictly increases the
 intensity, so it can only ever move a matmul towards compute-bound, never away from it — never the other
 way, for any of the three variables. Reaching compute-bound is not guaranteed, though: growing one
 variable only drives $I$ towards the ceiling set by the other two, $2xy/(s(x+y))$, and if that ceiling
 already sits below $I^\star$ no amount of growth in the third variable alone crosses the ridge. A and C
-share the same other-two values $\{4{,}096, 4{,}096\}$, hence the same ceiling
+share the same other-two values $`\{4{,}096, 4{,}096\}`$, hence the same ceiling
 $2\cdot4{,}096^2/(2\cdot 8{,}192) = 2{,}048$ FLOP/byte, comfortably above $I^\star = 208$: growing $m$
 past B's 2,048, or growing $k$ further from D's 4,096, both keep pushing further into compute-bound,
 towards that same ceiling, since both are instances of the one symmetric fact above.
 
 ### Part 2
 
-Every layer, of either type, has the same FLOPs and the same bytes moved: $\text{FLOPs}_\ell = 2Tdf =
-2\cdot20{,}480\cdot8{,}192\cdot32{,}768 = 10{,}995{,}116{,}277{,}760$, and
-$\text{bytes}_\ell = s(Td+df+Tf) = 2(20{,}480\cdot8{,}192 + 8{,}192\cdot32{,}768 + 20{,}480\cdot32{,}768)
-= 2{,}214{,}592{,}512$ — a type-D layer swaps which of the three products is the input and which is the
-output, but the set $\{Td, df, Tf\}$ is the same either way. Intensity
+Every layer, of either type, has the same FLOPs and the same bytes moved: $`\text{FLOPs}_\ell = 2Tdf =
+2\cdot20{,}480\cdot8{,}192\cdot32{,}768 = 10{,}995{,}116{,}277{,}760`$, and
+$`\text{bytes}_\ell = s(Td+df+Tf) = 2(20{,}480\cdot8{,}192 + 8{,}192\cdot32{,}768 + 20{,}480\cdot32{,}768)
+= 2{,}214{,}592{,}512`$ — a type-D layer swaps which of the three products is the input and which is the
+output, but the set $`\{Td, df, Tf\}`$ is the same either way. Intensity
 $I_\ell = 10{,}995{,}116{,}277{,}760 / 2{,}214{,}592{,}512 \approx 4{,}964.85$ FLOP/byte, far above
 $I^\star = 208$, so every layer is compute-bound: its predicted time is set by compute alone,
-$t_\ell = \text{FLOPs}_\ell/P \approx 35.24$ ms (transfer alone would take only
-$\text{bytes}_\ell/BW \approx 1.48$ ms).
+$`t_\ell = \text{FLOPs}_\ell/P \approx 35.24`$ ms (transfer alone would take only
+$`\text{bytes}_\ell/BW \approx 1.48`$ ms).
 
 With all 72 layers identical in cost,
 
-$$\text{total compute time} = \frac{72\cdot\text{FLOPs}_\ell}{P} \approx 2{,}537.33\text{ ms}, \qquad
-\text{total transfer time} = \frac{72\cdot\text{bytes}_\ell}{BW} \approx 106.30\text{ ms}.$$
+```math
+\text{total compute time} = \frac{72\cdot\text{FLOPs}_\ell}{P} \approx 2{,}537.33\text{ ms}, \qquad
+\text{total transfer time} = \frac{72\cdot\text{bytes}_\ell}{BW} \approx 106.30\text{ ms}.
+```
 
 Total transfer time is about 4.2% of total compute time, so — as at the single-layer level — the whole
 pass is compute-bound, and its predicted latency is the 2,537.33 ms compute figure, not the sum of the
@@ -220,15 +232,17 @@ tips the total over. This is why Part 3 splits the stack across two devices.
 ### Part 3
 
 **Pipeline parallelism.** Every layer costs the same $t_\ell \approx 35.24$ ms (Part 2), so each
-device's 36 layers take $36\,t_\ell \approx 1{,}268.67$ ms — exactly half of the single-device total,
-since the single-device total is $72\,t_\ell$. Layer 36 is even, a type-D layer, so the handed-off
+device's 36 layers take $`36\,t_\ell \approx 1{,}268.67`$ ms — exactly half of the single-device total,
+since the single-device total is $`72\,t_\ell`$. Layer 36 is even, a type-D layer, so the handed-off
 activation has shape $T\times d$: $\text{bytes} = sTd = 2\cdot20{,}480\cdot8{,}192 = 335{,}544{,}320
 \approx 335.54$ MB, taking $335{,}544{,}320 / (400\times10^{9}) \approx 0.84$ ms over the interconnect.
 End-to-end latency:
 
-$$t_{\text{PP}} = 36\,t_\ell + \frac{sTd}{B_{\text{net}}} + 36\,t_\ell = 72\,t_\ell + \frac{sTd}{B_{\text{net}}}.$$
+```math
+t_{\text{PP}} = 36\,t_\ell + \frac{sTd}{B_{\text{net}}} + 36\,t_\ell = 72\,t_\ell + \frac{sTd}{B_{\text{net}}}.
+```
 
-$72\,t_\ell$ is exactly the Part 2 total compute time, $\approx 2{,}537.33$ ms; adding the one handoff,
+$`72\,t_\ell`$ is exactly the Part 2 total compute time, $\approx 2{,}537.33$ ms; adding the one handoff,
 $\approx 0.84$ ms, gives $t_{\text{PP}} \approx 2{,}538.17$ ms. Splitting the layers across two devices
 does not reduce the latency of one input at all, since the two devices still run one after the other.
 
@@ -256,9 +270,11 @@ layer needs the gathered result: type-U layers cost $17.62 + 1.68 = 19.298$ ms e
 $\approx 694.73$ ms; type-D layers cost $17.62 + 0.42 = 18.040$ ms each, $36$ of them
 $\approx 649.43$ ms; together,
 
-$$t_{\text{TP}} \approx 694.73 + 649.43 = 1{,}344.16\text{ ms}.$$
+```math
+t_{\text{TP}} \approx 694.73 + 649.43 = 1{,}344.16\text{ ms}.
+```
 
-Tensor parallelism finishes this one input in about $1{,}344.16 / 2{,}537.33 \approx 53.0\%$ of the
+Tensor parallelism finishes this one input in about $`1{,}344.16 / 2{,}537.33 \approx 53.0\%`$ of the
 single-device time — nearly half, since compute genuinely splits across the two devices — at the cost
 of communicating on every one of the 72 layers. Total interconnect traffic per device is
 $36\cdot671.09\text{ MB} + 36\cdot167.77\text{ MB} \approx 30.20$ GB — about 90 times pipeline
@@ -289,7 +305,7 @@ $4Tdf/P = 4\cdot2{,}048\cdot8{,}192\cdot32{,}768 / (312\times10^{12}) \approx 7.
 device's own compute-plus-memory time is the sum of its two matmuls' own roofline times (each still
 individually compute-bound at every $p$ used below, since $d,f$ are large), and the all-reduce of the
 $T\times d$ partial output — logical size $S = Tds = 2{,}048\cdot8{,}192\cdot2 = 33{,}554{,}432$ bytes —
-adds $2(p-1)S/(p\,B_{\text{net}})$ on top, since it cannot overlap with this block's own compute:
+adds $`2(p-1)S/(p\,B_{\text{net}})`$ on top, since it cannot overlap with this block's own compute:
 
 | $p$ | FLOPs/device | weight/device | comm/device | $t_{\text{comm}}$ | $t_{\text{total}}$ | bound |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -326,7 +342,7 @@ past where token sharding has stalled.
 
 **A slower interconnect.** Repeating tensor sharding's bound classification with
 $B_{\text{net}}' = 25$ GB/s in place of 400 GB/s changes nothing about compute or weight bytes, only
-$t_{\text{comm}} = 2(p-1)S/(p\,B_{\text{net}}')$, which is $16\times$ larger at every $p$:
+$`t_{\text{comm}} = 2(p-1)S/(p\,B_{\text{net}}')`$, which is $16\times$ larger at every $p$:
 
 | $p$ | $t_{\text{comm}}$ | $t_{\text{total}}$ | bound |
 | --- | --- | --- | --- |

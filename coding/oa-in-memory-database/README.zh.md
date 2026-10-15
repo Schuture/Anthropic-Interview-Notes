@@ -223,7 +223,7 @@ class InMemoryDatabase(InMemoryDatabase):
 ```
 
 把 `InMemoryDatabase` 重新打开、定义成它自己的子类，而不是直接修改 Level 1 的代码块，这也是本解答后面
-逐关扩展这个类的方式。两个方法的开销都是 $O(m \log m)$（$m$ 是这条记录的字段数）：Python 标准库没有
+逐关扩展这个类的方式。两个方法的开销都是 $O(m \log m)$（$`m`$ 是这条记录的字段数）：Python 标准库没有
 现成的有序字符串索引可以直接定位出 `startswith` 匹配的那些字段。
 
 ### Level 3

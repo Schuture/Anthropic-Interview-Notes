@@ -429,9 +429,9 @@ class TaskManager(TaskManager):
 只会访问 `user` 曾经拥有过的任务。
 
 `update_task` 和 `complete_task` 仍然是 $O(1)$：都只是往某个任务自己的列表末尾追加，完全不需要
-查找，因为这个任务最新的事件永远就是最近一次追加的那个。`get_task` 是 $O(\log v)$（$v$ 是 `task_id`
+查找，因为这个任务最新的事件永远就是最近一次追加的那个。`get_task` 是 $O(\log v)$（$`v`$ 是 `task_id`
 积累的版本数）——一次 `bisect`。`get_task_list` 是 $O(k (\log v + \log k))$，其中 $k$ 是 `user`
-曾经创建过的任务总数（不论是否还活跃——每一个都得检查一遍），$v$ 是其中任意一个任务的版本数上界：
+曾经创建过的任务总数（不论是否还活跃——每一个都得检查一遍），$`v`$ 是其中任意一个任务的版本数上界：
 每个任务一次 `bisect`，再加上对存活下来的那些排序。
 
 另一种做法——维护一份全局的、只追加的日志，记录每一次 `add_task`/`update_task`/`complete_task`

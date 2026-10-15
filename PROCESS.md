@@ -324,7 +324,7 @@ hiring-manager rounds; one research loop had eight interviews over two days.
 ### Performance engineering
 
 Postings list Performance Engineer roles in San Francisco, New York and Seattle, with a posted range of
-$280,000–$850,000 ([posting](https://job-boards.greenhouse.io/anthropic/jobs/4020350008)). The team has used its
+$`280,000–`$850,000 ([posting](https://job-boards.greenhouse.io/anthropic/jobs/4020350008)). The team has used its
 take-home since early 2024 ([engineering post](https://www.anthropic.com/engineering/AI-resistant-technical-evaluations));
 see [Take-home assignments](#take-home-assignments). **Candidates report** (one performance loop): no assessment;
 recruiter screen, hiring-manager screen, then a coding screen on distributed mode and median; the candidate portal

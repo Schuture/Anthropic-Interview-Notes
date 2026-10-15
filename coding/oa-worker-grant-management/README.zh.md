@@ -244,7 +244,7 @@ Workforce.get_total_work_time = get_total_work_time
 Workforce.top_k_workers = top_k_workers
 ```
 
-`get_total_work_time` 的开销是 $O(n)$，$n$ 是时段数量；`top_k_workers` 的开销是 $O(m \log m)$，
+`get_total_work_time` 的开销是 $O(n)$，$`n`$ 是时段数量；`top_k_workers` 的开销是 $O(m \log m)$，
 $m$ 是已注册员工数量（开销主要来自排序；排序之后再截取前 $k$ 个，代价可以忽略不计，在这种规模下不
 值得为此单独设计一种堆结构）。
 
@@ -291,7 +291,7 @@ Workforce.set_promotion = set_promotion
 Workforce.calculate_pay = calculate_pay
 ```
 
-`set_promotion` 是 $O(1)$；`calculate_pay` 是 $O(n)$，$n$ 是该员工拥有的时段数量，不论已结束还是
+`set_promotion` 是 $O(1)$；`calculate_pay` 是 $O(n)$，$`n`$ 是该员工拥有的时段数量，不论已结束还是
 未结束。
 
 ### Level 4
@@ -342,8 +342,8 @@ Workforce.set_double_pay = set_double_pay
 Workforce.calculate_pay = calculate_pay
 ```
 
-`set_double_pay` 的开销是 $O(p \log p)$，$p$ 是目前已保存的时段数量，开销来自 `_merge_intervals`
-内部的排序；`calculate_pay` 每个时段的开销是 $O(n + p)$，$n$ 是时段数量，$p$ 是合并后的时段数量。
+`set_double_pay` 的开销是 $O(p \log p)$，$`p`$ 是目前已保存的时段数量，开销来自 `_merge_intervals`
+内部的排序；`calculate_pay` 每个时段的开销是 $O(n + p)$，$`n`$ 是时段数量，$`p`$ 是合并后的时段数量。
 
 ### 追问
 

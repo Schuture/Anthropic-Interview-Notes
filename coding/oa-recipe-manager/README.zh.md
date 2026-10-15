@@ -349,8 +349,8 @@ class RecipeManager(RecipeManager):
         return [r.public() for r in sorted(recipes, key=lambda r: len(r.ingredients))]   # NOTE: stable -- see above
 ```
 
-`list_recipes` 的开销是 $O(n \log n)$，$n$ 是菜谱总数。`find_by_ingredient` 和 `search_by_name_prefix`
-的开销是 $O(n \cdot m + k \log k)$，$m$ 是原料列表的平均长度，$k \le n$ 是匹配到的数量：每份菜谱的
+`list_recipes` 的开销是 $O(n \log n)$，$`n`$ 是菜谱总数。`find_by_ingredient` 和 `search_by_name_prefix`
+的开销是 $O(n \cdot m + k \log k)$，$`m`$ 是原料列表的平均长度，$`k \le n`$ 是匹配到的数量：每份菜谱的
 原料或名称都要先看一遍，才能对匹配结果排序，这和没有索引时的全表扫描是一样的代价。重放这一关的示例：
 
 ```python

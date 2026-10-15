@@ -325,7 +325,7 @@ Anthropic 官方怎么说：
 
 ### 性能工程
 
-招聘启事里，Performance Engineer 岗位分布在旧金山、纽约和西雅图，标注的薪资区间是 $280,000–$850,000
+招聘启事里，Performance Engineer 岗位分布在旧金山、纽约和西雅图，标注的薪资区间是 $`280,000–`$850,000
 （[招聘启事](https://job-boards.greenhouse.io/anthropic/jobs/4020350008)）。这个团队从 2024 年初开始
 使用自己的 take-home 作业（[工程博客](https://www.anthropic.com/engineering/AI-resistant-technical-evaluations)），
 详见[Take-home 作业](#take-home-作业)。**候选人反馈**（一个性能工程方向的流程）：没有测评；HR 初筛、

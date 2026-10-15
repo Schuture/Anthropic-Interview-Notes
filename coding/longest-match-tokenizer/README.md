@@ -234,7 +234,7 @@ class TrieTokenizer:
 `tokenize` walks at most $L$ trie edges from each of the $n$ starting positions before it must stop —
 either `text` runs out or no child continues the walk. Every step is one dictionary lookup keyed by a
 single character, an $O(1)$ operation, rather than the $O(\ell)$ it costs to slice and hash a fresh
-length-$\ell$ candidate the way `tokenize_merged` does for each length it tries: that turns
+length-$`\ell`$ candidate the way `tokenize_merged` does for each length it tries: that turns
 `tokenize_merged`'s $O(n \cdot L^2)$ into a genuine $O(n \cdot L)$ per call, not merely a smaller
 constant factor. What the trie buys beyond that is amortizing the $O(V)$ build cost of
 `__init__` across however many texts are tokenized with the same `vocab`, which the checks below

@@ -70,9 +70,9 @@ decay are your choice; state what you used and how you picked it.
 
 Run every combination of:
 
-- hidden width $H \in \{8, 128\}$;
-- training-set size $n_{\text{train}} \in \{100, 400, 1600\}$;
-- noise rate $p \in \{0.0, 0.2, 0.4\}$,
+- hidden width $`H \in \{8, 128\}`$;
+- training-set size $`n_{\text{train}} \in \{100, 400, 1600\}`$;
+- noise rate $`p \in \{0.0, 0.2, 0.4\}`$,
 
 with at least 5 seeds per combination (the same seed drives both `make_dataset` and the model's weight
 initialization). For every seed, in addition to the test accuracy after the last training epoch, record
