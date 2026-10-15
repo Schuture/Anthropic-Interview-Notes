@@ -16,13 +16,15 @@
 
 `Q` 是形状为 `(B, T_q, d)` 的浮点数组：`B` 个互相独立的批次，每个批次有 `T_q` 个 $\mathbb{R}^d$ 中的查询向量。`K` 的形状是 `(B, T_k, d)`：`T_k` 个与查询同处 $\mathbb{R}^d$ 的键向量。`V` 的形状是 `(B, T_k, d_v)`：`T_k` 个值向量，每个键对应一个值，它的维度 $d_v$ 不必等于 $d$。对批次 $b$、查询 $i$、键 $j$，
 
-$$\mathrm{score}_{b,i,j} = \frac{Q_{b,i} \cdot K_{b,j}}{\sqrt{d}}, \qquad
+```math
+\mathrm{score}_{b,i,j} = \frac{Q_{b,i} \cdot K_{b,j}}{\sqrt{d}}, \qquad
 \mathrm{weights}_{b,i,:} = \mathrm{softmax}(\mathrm{score}_{b,i,:}), \qquad
-\mathrm{output}_{b,i} = \sum_{j=0}^{T_k-1} \mathrm{weights}_{b,i,j}\, V_{b,j},$$
+\mathrm{output}_{b,i} = \sum_{j=0}^{T_k-1} \mathrm{weights}_{b,i,j}\, V_{b,j},
+```
 
-softmax 在 $j$ 上进行，也就是 `score` 的最后一个轴。可选的布尔数组 `mask`，形状为 `(B, T_q, T_k)`，限制每个查询能用哪些键：`mask[b, i, j]` 为 `True` 当且仅当批次 $b$ 的查询 $i$ 可以关注键 $j$，为 `False` 则不能；`mask=None` 表示每个查询都可以关注每个键。被掩码的键要在 softmax 之前把它的得分设为 $-\infty$ 来排除，绝不能在归一化之后把它的权重清零。如果某个查询的所有键都被掩码（$\mathrm{mask}_{b,i,:}$ 全为 `False`），约定它的权重全部是 $0$，输出是形状为 $(d_v,)$ 的零向量，而不是 $0/0$。
+softmax 在 $j$ 上进行，也就是 `score` 的最后一个轴。可选的布尔数组 `mask`，形状为 `(B, T_q, T_k)`，限制每个查询能用哪些键：`mask[b, i, j]` 为 `True` 当且仅当批次 $b$ 的查询 $i$ 可以关注键 $j$，为 `False` 则不能；`mask=None` 表示每个查询都可以关注每个键。被掩码的键要在 softmax 之前把它的得分设为 $-\infty$ 来排除，绝不能在归一化之后把它的权重清零。如果某个查询的所有键都被掩码（$`\mathrm{mask}_{b,i,:}`$ 全为 `False`），约定它的权重全部是 $0$，输出是形状为 $(d_v,)$ 的零向量，而不是 $0/0$。
 
-上面两次张量收缩——$QK^\top$ 和 $\mathrm{weights} \cdot V$——都要用 `np.einsum` 计算；softmax 是沿一个轴的归约，不是张量收缩，仍用普通的 NumPy 运算。让 softmax 数值稳定：在调用 `np.exp` 之前先减去每行的最大值。
+上面两次张量收缩——$`QK^\top`$ 和 $\mathrm{weights} \cdot V$——都要用 `np.einsum` 计算；softmax 是沿一个轴的归约，不是张量收缩，仍用普通的 NumPy 运算。让 softmax 数值稳定：在调用 `np.exp` 之前先减去每行的最大值。
 
 ```py
 def scaled_dot_product_attention(Q: np.ndarray, K: np.ndarray, V: np.ndarray,
@@ -31,7 +33,7 @@ def scaled_dot_product_attention(Q: np.ndarray, K: np.ndarray, V: np.ndarray,
     True where the query may attend to the key. Returns (B, T_q, d_v)."""
 ```
 
-举例，$B=1$、$T_q=2$、$T_k=3$、$d=2$、$d_v=1$：
+举例，$`B=1`$、$`T_q=2`$、$`T_k=3`$、$`d=2`$、$`d_v=1`$：
 
 ```text
 Q[0] = [[1, 0],      K[0] = [[1, 0],      V[0] = [[10],
@@ -51,7 +53,7 @@ mask[0] = [[False, False, False],   # 查询 0：所有键都被掩码
 
 ### Part 2 —— 多头自注意力
 
-*自注意力*（self-attention）是查询、键、值都来自同一个序列的缩放点积注意力。`X` 是形状为 `(B, T, d_model)` 的浮点数组。权重矩阵 `W_q`、`W_k`、`W_v`，形状都是 `(d_model, d_model)`，算出 $Q = XW_q$、$K = XW_k$、$V = XW_v$，形状都是 `(B, T, d_model)`。`d_model` 必须能被*头*（head）的个数 $H$ 整除，每个头的大小是 $d_{\text{head}} = d_{\text{model}} / H$。$Q$ 的头 $h$（$0 \le h < H$）的第 $e$ 个特征（$0 \le e < d_{\text{head}}$）就是 $Q$ 的第 $h \cdot d_{\text{head}} + e$ 列，$K$、$V$ 同理。头 $h$ 在 $T$ 个位置之间跑一次缩放点积注意力（Part 1 的公式，把 $d$ 换成 $d_{\text{head}}$），只用它自己那部分 $Q$、$K$、$V$，并且加上*因果掩码*（causal mask）：位置 $i$ 可以关注位置 $j$ 当且仅当 $j \le i$（查询不能关注更靠后的位置）。把 $H$ 个头的输出沿特征轴拼接起来，再乘以形状为 `(d_model, d_model)` 的输出投影 $W_o$，得到最终输出，形状 `(B, T, d_model)`。
+*自注意力*（self-attention）是查询、键、值都来自同一个序列的缩放点积注意力。`X` 是形状为 `(B, T, d_model)` 的浮点数组。权重矩阵 `W_q`、`W_k`、`W_v`，形状都是 `(d_model, d_model)`，算出 $Q = XW_q$、$`K = XW_k`$、$`V = XW_v`$，形状都是 `(B, T, d_model)`。`d_model` 必须能被*头*（head）的个数 $H$ 整除，每个头的大小是 $d_{\text{head}} = d_{\text{model}} / H$。$`Q`$ 的头 $h$（$`0 \le h < H`$）的第 $e$ 个特征（$`0 \le e < d_{\text{head}}`$）就是 $Q$ 的第 $h \cdot d_{\text{head}} + e$ 列，$`K`$、$`V`$ 同理。头 $h$ 在 $T$ 个位置之间跑一次缩放点积注意力（Part 1 的公式，把 $d$ 换成 $d_{\text{head}}$），只用它自己那部分 $Q$、$`K`$、$`V`$，并且加上*因果掩码*（causal mask）：位置 $i$ 可以关注位置 $j$ 当且仅当 $j \le i$（查询不能关注更靠后的位置）。把 $H$ 个头的输出沿特征轴拼接起来，再乘以形状为 `(d_model, d_model)` 的输出投影 $W_o$，得到最终输出，形状 `(B, T, d_model)`。
 
 用 `np.reshape`（拆分或合并头和特征这两个轴）和 `np.einsum`（把头轴移到时间轴之前，以及移回去）实现头的拆分与合并；三次输入投影、每个头的得分、每个头对 $V$ 的加权求和、输出投影，这些张量收缩全部用 `np.einsum` 实现。说明每个中间数组的形状。在给得分定标之前，先推导为什么要除以 $\sqrt{d_{\text{head}}}$：如果查询向量 $q$ 和键向量 $k$ 的 $d_{\text{head}}$ 个分量都是均值为 $0$、方差为 $1$ 的独立随机变量，求 $\mathrm{Var}(q \cdot k)$，并说明除以 $\sqrt{d_{\text{head}}}$ 起到了什么作用。
 
@@ -62,7 +64,7 @@ def multi_head_self_attention(X: np.ndarray, W_q: np.ndarray, W_k: np.ndarray, W
     n_heads; d_head = d_model // n_heads. Applies a causal mask. Returns (B, T, d_model)."""
 ```
 
-举例，$B=1$、$T=2$、$d_{\text{model}}=4$、$H=2$（于是 $d_{\text{head}}=2$）、$W_q=W_k=W_v=W_o=I_4$：
+举例，$`B=1`$、$`T=2`$、$`d_{\text{model}}=4`$、$`H=2`$（于是 $d_{\text{head}}=2$）、$`W_q=W_k=W_v=W_o=I_4`$：
 
 ```text
 X[0] = [[1, 0, 2, 0],       # 头 0 = 特征 [0, 1]，头 1 = 特征 [2, 3]
@@ -80,10 +82,12 @@ X[0] = [[1, 0, 2, 0],       # 头 0 = 特征 [0, 1]，头 1 = 特征 [2, 3]
 
 *层归一化*（layer normalization）把一个 $d$ 维行向量 $v$ 缩放为零均值、单位方差，再做一次可学习的逐元素仿射变换，缩放为 $\gamma \in \mathbb{R}^d$，平移为 $\beta \in \mathbb{R}^d$：
 
-$$\mathrm{LN}(v)_k = \frac{v_k - \mu}{\sqrt{\sigma^2 + \epsilon}}\,\gamma_k + \beta_k, \qquad
-\mu = \frac{1}{d}\sum_{k=0}^{d-1} v_k, \qquad \sigma^2 = \frac{1}{d}\sum_{k=0}^{d-1} (v_k - \mu)^2,$$
+```math
+\mathrm{LN}(v)_k = \frac{v_k - \mu}{\sqrt{\sigma^2 + \epsilon}}\,\gamma_k + \beta_k, \qquad
+\mu = \frac{1}{d}\sum_{k=0}^{d-1} v_k, \qquad \sigma^2 = \frac{1}{d}\sum_{k=0}^{d-1} (v_k - \mu)^2,
+```
 
-其中 $\epsilon > 0$ 是为数值安全加的一个小常数。作用在形状为 `(B, T, d)` 的数组 `x` 上时，$B \times T$ 行各自独立地归一化，每一行只用它自己的 $d$ 个特征。下面这个函数本应该这样归一化输入 `x`，再对归一化后的结果跑单头因果自注意力（Part 2 的公式，取 $H=1$），最后把结果作为残差连接加回 `x`——但它有四个 bug：一个在 `layer_norm` 求均值时归约的轴上，一个在它算出的方差的形状上，一个在 `causal_self_attention` 做指数运算前取最大值的轴上，一个在它给原始得分定标的方式上。把这四个都找出来并修复；代码里其余部分都是对的。修好之后的实现，在 `atol=1e-8` 的误差范围内，要与用显式的批次、时间、特征下标循环写出的同一公式（不用 NumPy 广播）完全一致，对任何输入都成立；它还要有 Part 2 那样的因果性质：改动 `x` 的第 $T-1$ 个 token，不会改变它之前任何位置的输出。
+其中 $\epsilon > 0$ 是为数值安全加的一个小常数。作用在形状为 `(B, T, d)` 的数组 `x` 上时，$`B \times T`$ 行各自独立地归一化，每一行只用它自己的 $d$ 个特征。下面这个函数本应该这样归一化输入 `x`，再对归一化后的结果跑单头因果自注意力（Part 2 的公式，取 $H=1$），最后把结果作为残差连接加回 `x`——但它有四个 bug：一个在 `layer_norm` 求均值时归约的轴上，一个在它算出的方差的形状上，一个在 `causal_self_attention` 做指数运算前取最大值的轴上，一个在它给原始得分定标的方式上。把这四个都找出来并修复；代码里其余部分都是对的。修好之后的实现，在 `atol=1e-8` 的误差范围内，要与用显式的批次、时间、特征下标循环写出的同一公式（不用 NumPy 广播）完全一致，对任何输入都成立；它还要有 Part 2 那样的因果性质：改动 `x` 的第 $T-1$ 个 token，不会改变它之前任何位置的输出。
 
 ```py
 def layer_norm(x: np.ndarray, gamma: np.ndarray, beta: np.ndarray, eps: float = 1e-5) -> np.ndarray:
@@ -112,7 +116,7 @@ def transformer_block_forward(x: np.ndarray, gamma: np.ndarray, beta: np.ndarray
     return x + causal_self_attention(layer_norm(x, gamma, beta), W_q, W_k, W_v)
 ```
 
-举例，$B=1$、$T=2$、$d=2$、$\gamma=(1,1)$、$\beta=(0,0)$、$W_q=W_k=W_v=I_2$：
+举例，$`B=1`$、$`T=2`$、$`d=2`$、$`\gamma=(1,1)`$、$`\beta=(0,0)`$、$`W_q=W_k=W_v=I_2`$：
 
 ```text
 x[0] = [[1, 0],
@@ -136,10 +140,12 @@ x[0] = [[1, 0],
 `(批次, 查询)` 一个输出向量。在 `np.exp` 之前减去行最大值，在精确算术下不改变 softmax 的结果：对任何不依赖被求和下标
 $j$ 的常数 $m$，
 
-$$\frac{e^{s_j - m}}{\sum_k e^{s_k - m}} = \frac{e^{-m}e^{s_j}}{e^{-m}\sum_k e^{s_k}} = \frac{e^{s_j}}{\sum_k e^{s_k}},$$
+```math
+\frac{e^{s_j - m}}{\sum_k e^{s_k - m}} = \frac{e^{-m}e^{s_j}}{e^{-m}\sum_k e^{s_k}} = \frac{e^{s_j}}{\sum_k e^{s_k}},
+```
 
 同时让每个指数都 $\le 0$，`np.exp` 就不会溢出。整行都被掩码时，每个得分都是 $-\infty$，行最大值也是
-$-\infty$，$-\infty - (-\infty)$ 是 `nan`；实现里把这一行的 $m$ 换成 $0$ 再相减，这一行的每个元素仍然是
+$-\infty$，$`-\infty - (-\infty)`$ 是 `nan`；实现里把这一行的 $m$ 换成 $0$ 再相减，这一行的每个元素仍然是
 $\exp(-\infty) = 0$（这一行的得分本来就是 $-\infty$，减去的有限值是多少并不影响这一点），并单独防住
 softmax 分母——同样在这一行恰好为 $0$——引发的 $0/0$。
 
@@ -169,7 +175,7 @@ def scaled_dot_product_attention(Q, K, V, mask=None):
 
 ### Part 2
 
-$Q$、$K$、$V$ 各是一次与对应权重矩阵的收缩：`np.einsum('btd,de->bte', X, W_q)`，`W_k`、`W_v` 同理——形状
+$Q$、$`K`$、$`V`$ 各是一次与对应权重矩阵的收缩：`np.einsum('btd,de->bte', X, W_q)`，`W_k`、`W_v` 同理——形状
 `(B, T, d_model)`。把最后一个轴拆成 $(H, d_{\text{head}})$ 是一次 `reshape`，不是 `einsum`（`einsum` 只对已有的轴做置换和求和，不能把一个轴拆成两个），得到形状
 `(B, T, H, d_head)`；把头轴移到时间轴之前是一次纯置换，`np.einsum('bthe->bhte', ...)`，得到
 `(B, H, T, d_head)`。每个头的得分是 `np.einsum('bhqe,bhke->bhqk', Qh, Kh)`，形状 `(B, H, T, T)`——和
@@ -179,19 +185,21 @@ Part 1 的收缩一样，只是多了一个类似批次的轴 `h`；对 $V$ 的�
 `(B, T, d_model)`；最后 `np.einsum('btd,de->bte', merged, W_o)` 给出 `(B, T, d_model)`。因为 $i \le i$
 恒成立，查询总能看到自己，所以这里 `scores.max(axis=-1)` 永远不是 $-\infty$，Part 1 里整行掩码的情形在因果的模块里不会出现。
 
-**$1/\sqrt{d_{\text{head}}}$ 这个定标。** 设 $q, k \in \mathbb{R}^{d_{\text{head}}}$ 的各分量都是均值 $0$、方差
+**$`1/\sqrt{d_{\text{head}}}`$ 这个定标。** 设 $q, k \in \mathbb{R}^{d_{\text{head}}}$ 的各分量都是均值 $0$、方差
 $1$ 的独立随机变量，并且每个 $q_i$ 都与每个 $k_j$ 独立。于是 $q \cdot k = \sum_{i=0}^{d_{\text{head}}-1} q_ik_i$，
 
-$$\mathrm{E}[q \cdot k] = \sum_i \mathrm{E}[q_i]\,\mathrm{E}[k_i] = 0, \qquad
+```math
+\mathrm{E}[q \cdot k] = \sum_i \mathrm{E}[q_i]\,\mathrm{E}[k_i] = 0, \qquad
 \mathrm{Var}(q\cdot k) = \mathrm{E}\Bigl[\bigl(\textstyle\sum_i q_ik_i\bigr)^2\Bigr]
-= \sum_i\sum_j \mathrm{E}[q_ik_iq_jk_j].$$
+= \sum_i\sum_j \mathrm{E}[q_ik_iq_jk_j].
+```
 
-当 $i \ne j$ 时，$q_i, k_i, q_j, k_j$ 是四个相互独立、均值为零的变量，所以
+当 $i \ne j$ 时，$`q_i, k_i, q_j, k_j`$ 是四个相互独立、均值为零的变量，所以
 $\mathrm{E}[q_ik_iq_jk_j] = \mathrm{E}[q_i]\mathrm{E}[k_i]\mathrm{E}[q_j]\mathrm{E}[k_j] = 0$；当
-$i = j$ 时，$\mathrm{E}[q_i^2k_i^2] = \mathrm{E}[q_i^2]\,\mathrm{E}[k_i^2] = 1 \cdot 1 = 1$，用到了
+$i = j$ 时，$`\mathrm{E}[q_i^2k_i^2] = \mathrm{E}[q_i^2]\,\mathrm{E}[k_i^2] = 1 \cdot 1 = 1`$，用到了
 $q_i$ 与 $k_i$ 的独立性，以及 $\mathrm{E}[q_i^2] = \mathrm{Var}(q_i) = 1$。于是
 $\mathrm{Var}(q\cdot k) = \sum_{i=0}^{d_{\text{head}}-1} 1 = d_{\text{head}}$：在这个模型下，点积的标准差、也就是它典型的大小，按
-$\sqrt{d_{\text{head}}}$ 增长。$d_{\text{head}}$ 越大，未定标的得分就分散得越开，softmax 越会趋于饱和、逼近
+$\sqrt{d_{\text{head}}}$ 增长。$`d_{\text{head}}`$ 越大，未定标的得分就分散得越开，softmax 越会趋于饱和、逼近
 one-hot 向量，它的雅可比 $\partial p_i/\partial s_j = p_i(\delta_{ij}-p_j)$ 在每一处都趋于
 $0$——对得分的梯度趋于消失。把 $q \cdot k$ 除以 $\sqrt{d_{\text{head}}}$，能把它的方差重新缩放回恰好
 $1$，且对任意 $d_{\text{head}}$ 都成立，与头的大小无关，这正是不论每个头有多少特征都能让 softmax 处在良态区域的原因。
@@ -224,12 +232,12 @@ def multi_head_self_attention(X, W_q, W_k, W_v, W_o, n_heads):
 
 复杂度：Part 2 里四个 `(d_model, d_model)` 投影合计花费 $O(BTd_{\text{model}}^2)$；每个头的收缩花费
 $O(BHT^2d_{\text{head}}) = O(BT^2d_{\text{model}})$，因为 $H \cdot d_{\text{head}} = d_{\text{model}}$；
-`scores`/`weights` 占用 $O(BHT^2)$ 的内存。序列很长时（$T \gg d_{\text{model}}$）$T^2$ 那一项占主导；序列短时，
+`scores`/`weights` 占用 $O(BHT^2)$ 的内存。序列很长时（$`T \gg d_{\text{model}}`$）$`T^2`$ 那一项占主导；序列短时，
 $d_{\text{model}}^2$ 的投影占主导。
 
 ### Part 3
 
-按下面的顺序一个个修复，检查代码用的那组随机输入（$B=3$、$T=5$、$d=4$）会依次暴露出不同的症状：
+按下面的顺序一个个修复，检查代码用的那组随机输入（$`B=3`$、$`T=5`$、$`d=4`$）会依次暴露出不同的症状：
 
 | 已修复的 bug | 结果 | 指向 |
 | --- | --- | --- |
@@ -244,7 +252,7 @@ $d_{\text{model}}^2$ 的投影占主导。
 `(B, T, d)` 的 `x - mean` 时，NumPy 按末尾对齐两个形状，也就是拿 `d` 去对 `T`；只要 $d \ne T$，NumPy 就无法广播，直接报错。
 
 **`layer_norm` 的 `mean`。** `axis=0` 归约的是批次轴，而不是特征轴，于是每一行都被*同一批次里所有序列在这一特征上的均值*居中，而不是*它自己那
-$d$ 个特征的均值*——当 $\gamma=1,\beta=0$ 且批次大小为 $1$ 时格外明显：一个元素的均值就是它自己，所以 `x - mean`
+$`d`$ 个特征的均值*——当 $\gamma=1,\beta=0$ 且批次大小为 $1$ 时格外明显：一个元素的均值就是它自己，所以 `x - mean`
 恒为 $0$，`layer_norm` 不管 `x` 是什么都只返回常数 $\beta$。
 
 **softmax 的 `max`。** `axis=-2` 取的是查询轴上的最大值，而不是键轴。Part 1 里用来说明减去一个常数不改变结果的等式，要求这个常数不依赖被求和的那个下标（键轴，`axis=-1`）；`axis=-2`
@@ -283,12 +291,12 @@ def transformer_block_forward(x, gamma, beta, W_q, W_k, W_v):
   $O(BT^2d_{\text{model}})$；`scores`/`weights` 占用 $O(BHT^2)$ 内存。序列长时 $T^2$ 那一项占主导；序列短时
   $d_{\text{model}}^2$ 的投影占主导。
 - **KV 缓存。** 在因果掩码下，位置 $j$ 的键和值不依赖它之后的任何位置。逐个生成新 token 的解码过程因此可以把之前每个位置的
-  $K$、$V$ 缓存起来：新的一步只需要新位置的 $Q$，把新的一行拼进缓存的 $K$、$V$，花费 $O(T)$，而不必从头重新计算全部
+  $K$、$`V`$ 缓存起来：新的一步只需要新位置的 $Q$，把新的一行拼进缓存的 $K$、$`V`$，花费 $O(T)$，而不必从头重新计算全部
   $T$ 个位置、做一次 $O(T^2)$ 的注意力。
 - **`-inf` 还是一个很大的负数。** `-inf` 让被掩码位置的权重恰好是 $0$，这正是整行掩码时 `denom` 恰好为 $0$、因而可以被检测到的原因。用
   `-1e9` 这样的有限值代替，能避免整行掩码时算出 `nan`（softmax 会悄悄地变成均匀分布），但它本身只在足够宽的类型里才能被表示：转成
   `float16`（能表示的最大有限值约为 $65504$）之后，`-1e9` 照样会变成 `-inf`。
-- **多查询与分组查询注意力。** 让 $K$、$V$ 的头数比 $Q$ 少——共用一个头（多查询，multi-query）或者分成几组、每组由若干查询头共用（分组查询，grouped-query）——做法是投影到
+- **多查询与分组查询注意力。** 让 $K$、$`V`$ 的头数比 $Q$ 少——共用一个头（多查询，multi-query）或者分成几组、每组由若干查询头共用（分组查询，grouped-query）——做法是投影到
   `g < d_model` 个特征，`np.einsum('btd,dg->btg', X, W_k)`，再 reshape 成 `(B, T, H_kv, d_head)`。同一组里的每个查询头都和同一份
   `Kh`/`Vh` 做收缩；换来的好处是 KV 缓存只需要存 $H_{kv}$ 个头的键和值，而不是 $H$ 个。
 - **`einsum` 与 `@`。** `np.einsum(subscripts, *arrays)` 不加 `optimize=True` 时会按从左到右的顺序求值，不会调用

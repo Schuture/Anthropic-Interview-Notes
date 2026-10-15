@@ -180,7 +180,7 @@ cs.merge_user("dave", "alice")                     # -> None  -- "dave" 不是�
         and returns the resulting remaining capacity."""
 ```
 
-`compress_file` 的取整规则是：把原大小除以二后向上取整（$\lceil \text{size} / 2 \rceil$），所以
+`compress_file` 的取整规则是：把原大小除以二后向上取整（$`\lceil \text{size} / 2 \rceil`$），所以
 大小为 1 的文件压缩后仍然是大小为 1，绝不会变成 0。`decompress_file` 则是精确地翻倍，不做任何取整，
 所以当被压缩前的大小是奇数时，解压并不总能还原出压缩前的精确大小。`decompress_file` 的容量检查，
 比较的是 `name` 当前（压缩后）的大小与 `user_id` 的剩余容量——这时 `name` 仍按当前大小计入容量——
@@ -271,7 +271,7 @@ def find_files(self, prefix: str, suffix: str) -> list[str]:
 CloudStorage.find_files = find_files
 ```
 
-过滤整个存储是 $O(n)$（$n$ 是文件总数），再给 $k$ 个匹配项排序又加上 $O(k \log k)$。
+过滤整个存储是 $O(n)$（$`n`$ 是文件总数），再给 $k$ 个匹配项排序又加上 $O(k \log k)$。
 
 ### Level 3
 
@@ -351,7 +351,7 @@ CloudStorage.merge_user = merge_user
 `_remaining(target)` 变成负数，因为合并前每个用户自己的已用量都不超过自己的容量，两个这样的不等式
 相加，得到的仍然是同一个不等式。
 
-`add_user`、`add_file_by`、`copy_file` 都是 $O(1)$；`merge_user` 是 $O(f)$（$f$ 是整个存储当前的
+`add_user`、`add_file_by`、`copy_file` 都是 $O(1)$；`merge_user` 是 $O(f)$（$`f`$ 是整个存储当前的
 文件数），因为它要扫描 `_owner` 的每一项才能找到 `source` 的文件。
 
 ### Level 4
@@ -454,7 +454,7 @@ CloudStorage.restore_user = restore_user
 无法完全成功的恢复会让每个文件、每一份容量都保持原样。
 
 `compress_file` 和 `decompress_file` 都是 $O(1)$；`backup_user` 和 `restore_user` 是 $O(f)$
-（$f$ 是存储当前的文件数）。
+（$`f`$ 是存储当前的文件数）。
 
 ### 追问
 

@@ -251,7 +251,7 @@ class Memoize:
 ```
 
 `generate_key` 和 `__call__` 期望情况下都是 $O(1)$，主要开销是对键做哈希和常数次字典操作；
-`sorted(kwargs.items())` 的开销是 $O(k \log k)$，$k$ 是这一次调用传入的关键字参数个数，和 `capacity` 无
+`sorted(kwargs.items())` 的开销是 $O(k \log k)$，$`k`$ 是这一次调用传入的关键字参数个数，和 `capacity` 无
 关。
 
 ### Part 2

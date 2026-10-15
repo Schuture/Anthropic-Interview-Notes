@@ -119,7 +119,7 @@ process_images_parallel 仍须写出全部 200 * 5 = 1,000 个输出，
 
 ### Part 3 —— 共享前缀复用
 
-流水线的*前缀*是它的前 $k$ 个步骤，$0 \le k \le$ 其长度；两个前缀*相同*，当且仅当二者长度相同，且
+流水线的*前缀*是它的前 $k$ 个步骤，$`0 \le k \le`$ 其长度；两个前缀*相同*，当且仅当二者长度相同，且
 逐步对应的 `"type"` 与参数值都相同。请实现 `process_images_shared_prefix`：签名、输出和跨进程规则都
 与 `process_images_parallel` 相同，但对同一张图片而言，被两条或更多流水线共享的每个前缀都只计算
 一次——某条流水线在该前缀之后继续执行，不能对共享它的另一条流水线产生可见影响。共享只发生在应用于
@@ -223,7 +223,7 @@ def process_images(image_dir, transformation_dir, output_dir, get_output_path):
                 run_pipeline(base, steps).save(get_output_path(image_name, json_name), format="PNG")
 ```
 
-对于 $N$ 张图片和长度总和为 $S$ 步的 $M$ 条流水线，这一实现恰好调用 $N$ 次 `Image.open`、$N \times S$
+对于 $N$ 张图片和长度总和为 $S$ 步的 $M$ 条流水线，这一实现恰好调用 $N$ 次 `Image.open`、$`N \times S`$
 次 `apply_step`，全部在一个进程、一个核心上完成。
 
 ### Part 2

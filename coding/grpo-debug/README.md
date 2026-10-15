@@ -11,14 +11,14 @@
 ## Problem
 
 The file `grpo_train.py` below trains a tiny policy with *Group Relative Policy Optimization*
-(GRPO) on a synthetic task with a verifiable reward: given two digits $a, b \in \{0,\dots,9\}$ as
+(GRPO) on a synthetic task with a verifiable reward: given two digits $`a, b \in \{0,\dots,9\}`$ as
 the prompt, the policy must answer with the single token $(a+b) \bmod 10$.
 
 A *policy* $\pi_\theta$ maps a prompt $(a,b)$ to a categorical distribution over $V = 10$ candidate
-answer tokens $\{0,\dots,9\}$: $\pi_\theta(\cdot \mid a,b) = \operatorname{softmax}(f_\theta(a,b))$,
+answer tokens $`\{0,\dots,9\}`$: $\pi_\theta(\cdot \mid a,b) = \mathrm{softmax}(f_\theta(a,b))$,
 where $f_\theta(a,b) \in \mathbb{R}^V$ are the logits produced by a small network. A *response* $o$
 is a single token sampled from $\pi_\theta(\cdot\mid a,b)$, and its *reward* is
-$r(o,a,b) = \mathbb{1}[\,o = (a+b) \bmod 10\,]$.
+$`r(o,a,b) = \mathbb{1}[\,o = (a+b) \bmod 10\,]`$.
 
 For each prompt, a *group* of $G$ responses $o_1,\dots,o_G$ is sampled independently from the same
 distribution $\pi_{\theta_{\mathrm{old}}}(\cdot\mid a,b)$, where $\theta_{\mathrm{old}}$ is a
@@ -26,13 +26,13 @@ snapshot of the parameters taken once, before any of the updates described below
 $r_i = r(o_i,a,b)$, the *group-relative advantage* of response $i$ is
 
 ```math
-A_i = \frac{r_i - \bar r}{\operatorname{std}(r) + \epsilon_{\mathrm{adv}}}, \qquad
+A_i = \frac{r_i - \bar r}{\mathrm{std}(r) + \epsilon_{\mathrm{adv}}}, \qquad
 \bar r = \frac{1}{G}\sum_{j=1}^G r_j, \qquad
-\operatorname{std}(r) = \sqrt{\frac{1}{G-1}\sum_{j=1}^G (r_j - \bar r)^2},
+\mathrm{std}(r) = \sqrt{\frac{1}{G-1}\sum_{j=1}^G (r_j - \bar r)^2},
 ```
 
 with a small constant $\epsilon_{\mathrm{adv}} > 0$. For example, a group of $G=4$ responses with
-rewards $(1,0,1,0)$ has $\bar r = 0.5$, $\operatorname{std}(r) = 1/\sqrt3 \approx 0.5774$ (an
+rewards $(1,0,1,0)$ has $\bar r = 0.5$, $\mathrm{std}(r) = 1/\sqrt3 \approx 0.5774$ (an
 $\epsilon_{\mathrm{adv}}$ of $10^{-6}$ changes this negligibly), and
 
 ```text
@@ -50,16 +50,16 @@ The training loss for one flattened batch of $P \cdot G$ samples (all $G$ respon
 prompts) is
 
 ```math
-L(\theta) = \frac{1}{PG}\sum_{i=1}^{PG} -\min\!\big(\rho_i A_i,\ \operatorname{clip}(\rho_i,\, 1-\varepsilon,\, 1+\varepsilon)\, A_i\big)
+L(\theta) = \frac{1}{PG}\sum_{i=1}^{PG} -\min\!\big(\rho_i A_i,\ \mathrm{clip}(\rho_i,\, 1-\varepsilon,\, 1+\varepsilon)\, A_i\big)
 \;+\; \beta \cdot \frac{1}{PG}\sum_{i=1}^{PG} D_{\mathrm{KL}}\!\big(\pi_\theta(\cdot\mid a_i,b_i) \,\Vert\, \pi_{\mathrm{ref}}(\cdot\mid a_i,b_i)\big),
 ```
 
-where $\operatorname{clip}(x, l, u) = \min(\max(x,l),u)$, $\varepsilon$ is the clip range, $\beta$ is
+where $\mathrm{clip}(x, l, u) = \min(\max(x,l),u)$, $\varepsilon$ is the clip range, $\beta$ is
 a fixed coefficient, and $\pi_{\mathrm{ref}}$ is a second, frozen copy of the policy fixed at its
 value before training started (never updated by the optimizer, and unrelated to
 $\theta_{\mathrm{old}}$). For instance, with $\varepsilon = 0.2$ the four pairs
-$(\rho_i, A_i) \in \{(0.7,1), (1.5,1), (0.7,-1), (1.5,-1)\}$ give clipped values
-$\operatorname{clip}(\rho_i,0.8,1.2) \in \{0.8, 1.2, 0.8, 1.2\}$ and
+$`(\rho_i, A_i) \in \{(0.7,1), (1.5,1), (0.7,-1), (1.5,-1)\}`$ give clipped values
+$`\mathrm{clip}(\rho_i,0.8,1.2) \in \{0.8, 1.2, 0.8, 1.2\}`$ and
 
 ```text
 rho_i * A_i          =  0.7,  1.5, -0.7, -1.5
@@ -198,7 +198,7 @@ gradient and the REINFORCE gradient can only hold at the first inner step of eac
 why $\rho_i$ is, in general, no longer $1$ from the second inner step onward.
 
 **(b)** For $\varepsilon = 0.2$, state the general rule (any $\rho$, any sign of $A$) for when
-$\operatorname{clip}(\rho,1-\varepsilon,1+\varepsilon)A$ rather than $\rho A$ is the value selected by
+$\mathrm{clip}(\rho,1-\varepsilon,1+\varepsilon)A$ rather than $\rho A$ is the value selected by
 $\min(\cdot,\cdot)$, and what $\partial(\text{surrogate})/\partial\rho$ equals in that region.
 
 **(c)** Show that $\frac{1}{G}\sum_{i=1}^G A_i = 0$ for every group, by construction. Use it to
@@ -252,7 +252,7 @@ actions = torch.multinomial(probs_old, 1, generator=rng).squeeze(1)   # was torc
 **Bug 2: `return (rewards - mean) / std` in `group_advantages`.** When every response in a group
 gets the same reward — every deviation from the group mean is exactly $0$ — `std` is not "close to"
 zero, it is exactly $0$, and $0/0$ is `nan`, not a large or a small number. With `batch_size=100`
-groups of `group_size=16` and a freshly initialized policy near the $10\%$ chance level, the
+groups of `group_size=16` and a freshly initialized policy near the $`10\%`$ chance level, the
 probability that all $100$ groups contain at least one correct response is negligible, so this
 `nan` appears on literally the first optimizer step. `loss.backward()` then writes `nan` into every
 parameter's gradient, and `opt.step()` writes `nan` into every parameter itself, permanently — the
@@ -308,9 +308,9 @@ how far the policy has already moved on this batch. This is also why the bug in 
 whenever `inner_steps == 1`: with a single inner step, the buggy and the correct `logp_old` are
 numerically identical, and the two implementations compute the same update.
 
-**(b)** $\operatorname{clip}(\rho,1-\varepsilon,1+\varepsilon)A$ is the value selected by $\min(\cdot,\cdot)$
+**(b)** $\mathrm{clip}(\rho,1-\varepsilon,1+\varepsilon)A$ is the value selected by $\min(\cdot,\cdot)$
 exactly when $\rho$ has moved outside $[1-\varepsilon,1+\varepsilon]$ *in the direction that the sign
-of $A$ already favors*: $\rho > 1+\varepsilon$ with $A>0$ (already increasing a good response's
+of $`A`$ already favors*: $\rho > 1+\varepsilon$ with $A>0$ (already increasing a good response's
 probability past the trust region), or $\rho < 1-\varepsilon$ with $A<0$ (already decreasing a bad
 response's probability past it). The four pairs from the statement cover exactly these two cases and
 their opposites:
@@ -322,25 +322,25 @@ their opposites:
 (rho, A) = (1.5, -1): unclipped -1.5 < clipped -1.2 -> min picks -1.5 (unclipped; not overshot)
 ```
 
-Where the clipped branch is selected, $\operatorname{clip}(\rho,\dots)$ is locally constant in
+Where the clipped branch is selected, $\mathrm{clip}(\rho,\dots)$ is locally constant in
 $\rho$, so $\partial(\text{surrogate})/\partial\rho = 0$: no gradient signal pushes $\rho$ any
 further in that direction. Where the unclipped branch is selected — including whenever $\rho$ moved
 *against* what $A$ favors — the gradient is the plain $A$, unreduced: clipping never blocks a
 correction, only the continuation of an already-exploited move.
 
 **(c)** $\sum_{i=1}^G (r_i - \bar r) = \sum_i r_i - G\bar r = G\bar r - G\bar r = 0$, and dividing by
-the same $\operatorname{std}(r) + \epsilon_{\mathrm{adv}}$ for every $i$ in the group preserves this:
-$\sum_i A_i = 0/(\operatorname{std}(r)+\epsilon_{\mathrm{adv}}) = 0$. In an actor-critic estimator
+the same $\mathrm{std}(r) + \epsilon_{\mathrm{adv}}$ for every $i$ in the group preserves this:
+$\sum_i A_i = 0/(\mathrm{std}(r)+\epsilon_{\mathrm{adv}}) = 0$. In an actor-critic estimator
 $\frac1G\sum_i (r_i - b(s))\nabla_\theta\log\pi_\theta(o_i\mid s)$, any baseline $b(s)$ that does not
 depend on $o_i$ leaves the estimator unbiased, because
 $\sum_o \pi_\theta(o\mid s)\nabla_\theta\log\pi_\theta(o\mid s) = \nabla_\theta \sum_o \pi_\theta(o\mid s) = \nabla_\theta 1 = 0$
 for any fixed $s$ — subtracting $b(s)$ contributes exactly $0$ in expectation, while typically
-reducing the estimator's variance when $b(s)$ tracks $\mathbb{E}_{o\sim\pi}[r(o,s)\mid s]$. A learned
+reducing the estimator's variance when $b(s)$ tracks $`\mathbb{E}_{o\sim\pi}[r(o,s)\mid s]`$. A learned
 $V_\phi(s)$ is trained by regression to approximate exactly that conditional expectation, at the cost
 of a second network, its own optimizer, and its own approximation error. The group mean $\bar r$ is
 a direct, sample-based estimate of the same quantity, computed from $G$ fresh samples of this exact
 prompt, so it plays the same variance-reducing role without a second network at all; dividing further
-by $\operatorname{std}(r)$ additionally rescales the advantage so that groups with more or less
+by $\mathrm{std}(r)$ additionally rescales the advantage so that groups with more or less
 spread-out rewards contribute comparably.
 
 **(d)** For $G=1$, `rewards.std(dim=1)` divides the sum of squared deviations by $G-1=0$: the
@@ -368,7 +368,7 @@ $\pi_{\mathrm{ref}}$ regardless of the reward signal, and training stops improvi
 
 - **`ratio = logp_new - logp_old`, without the `exp`.** For small updates this tracks the true ratio
   reasonably well, since $\log(1+x)\approx x$ near $x=0$, so the model can often still learn
-  something; the failure is structural, not immediate. $\operatorname{clip}$ now bounds a
+  something; the failure is structural, not immediate. $\mathrm{clip}$ now bounds a
   *log*-difference to $[-\varepsilon,\varepsilon]$ rather than a probability ratio to
   $[1-\varepsilon,1+\varepsilon]$ — a much narrower band in probability terms once $|x|$ is not
   small — and the true ratio is bounded below by $0$ (a token the policy now strongly disfavors can

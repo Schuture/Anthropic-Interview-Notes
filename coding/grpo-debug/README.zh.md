@@ -11,27 +11,27 @@
 ## 题目
 
 下面的文件 `grpo_train.py` 用*组相对策略优化*（Group Relative Policy Optimization，GRPO）训练一个很小的策略，
-任务是一个奖励可验证的合成任务：给定两个数字 $a, b \in \{0,\dots,9\}$ 作为 prompt，策略必须给出单个 token
+任务是一个奖励可验证的合成任务：给定两个数字 $`a, b \in \{0,\dots,9\}`$ 作为 prompt，策略必须给出单个 token
 $(a+b) \bmod 10$ 作为回答。
 
-*策略*（policy）$\pi_\theta$ 把一个 prompt $(a,b)$ 映射为在 $V = 10$ 个候选答案 token
-$\{0,\dots,9\}$ 上的一个类别分布：$\pi_\theta(\cdot \mid a,b) = \operatorname{softmax}(f_\theta(a,b))$，
-其中 $f_\theta(a,b) \in \mathbb{R}^V$ 是一个小网络给出的 logits。*响应*（response）$o$ 是从
+*策略*（policy）$`\pi_\theta`$ 把一个 prompt $(a,b)$ 映射为在 $V = 10$ 个候选答案 token
+$`\{0,\dots,9\}`$ 上的一个类别分布：$`\pi_\theta(\cdot \mid a,b) = \mathrm{softmax}(f_\theta(a,b))`$，
+其中 $f_\theta(a,b) \in \mathbb{R}^V$ 是一个小网络给出的 logits。*响应*（response）$`o`$ 是从
 $\pi_\theta(\cdot\mid a,b)$ 中采样出的单个 token，它的*奖励*（reward）为
-$r(o,a,b) = \mathbb{1}[\,o = (a+b) \bmod 10\,]$。
+$`r(o,a,b) = \mathbb{1}[\,o = (a+b) \bmod 10\,]`$。
 
 对每个 prompt，都从同一个分布 $\pi_{\theta_{\mathrm{old}}}(\cdot\mid a,b)$ 中独立采样出一*组*（group）
 $G$ 个响应 $o_1,\dots,o_G$，其中 $\theta_{\mathrm{old}}$ 是在下文所有更新开始之前取的一份参数快照。
 记 $r_i = r(o_i,a,b)$，响应 $i$ 的*组内相对优势*（group-relative advantage）为
 
 ```math
-A_i = \frac{r_i - \bar r}{\operatorname{std}(r) + \epsilon_{\mathrm{adv}}}, \qquad
+A_i = \frac{r_i - \bar r}{\mathrm{std}(r) + \epsilon_{\mathrm{adv}}}, \qquad
 \bar r = \frac{1}{G}\sum_{j=1}^G r_j, \qquad
-\operatorname{std}(r) = \sqrt{\frac{1}{G-1}\sum_{j=1}^G (r_j - \bar r)^2},
+\mathrm{std}(r) = \sqrt{\frac{1}{G-1}\sum_{j=1}^G (r_j - \bar r)^2},
 ```
 
 其中 $\epsilon_{\mathrm{adv}} > 0$ 是一个很小的常数。例如，一组 $G=4$ 个响应，奖励为 $(1,0,1,0)$，
-则 $\bar r = 0.5$，$\operatorname{std}(r) = 1/\sqrt3 \approx 0.5774$（$\epsilon_{\mathrm{adv}}$ 取
+则 $\bar r = 0.5$，$`\mathrm{std}(r) = 1/\sqrt3 \approx 0.5774`$（$`\epsilon_{\mathrm{adv}}`$ 取
 $10^{-6}$ 时这一步几乎没有影响），于是
 
 ```text
@@ -49,15 +49,15 @@ $\pi_{\theta_{\mathrm{old}}}$：
 训练损失为
 
 ```math
-L(\theta) = \frac{1}{PG}\sum_{i=1}^{PG} -\min\!\big(\rho_i A_i,\ \operatorname{clip}(\rho_i,\, 1-\varepsilon,\, 1+\varepsilon)\, A_i\big)
+L(\theta) = \frac{1}{PG}\sum_{i=1}^{PG} -\min\!\big(\rho_i A_i,\ \mathrm{clip}(\rho_i,\, 1-\varepsilon,\, 1+\varepsilon)\, A_i\big)
 \;+\; \beta \cdot \frac{1}{PG}\sum_{i=1}^{PG} D_{\mathrm{KL}}\!\big(\pi_\theta(\cdot\mid a_i,b_i) \,\Vert\, \pi_{\mathrm{ref}}(\cdot\mid a_i,b_i)\big),
 ```
 
-其中 $\operatorname{clip}(x, l, u) = \min(\max(x,l),u)$，$\varepsilon$ 是裁剪范围，$\beta$ 是一个固定的系数，
+其中 $\mathrm{clip}(x, l, u) = \min(\max(x,l),u)$，$`\varepsilon`$ 是裁剪范围，$`\beta`$ 是一个固定的系数，
 $\pi_{\mathrm{ref}}$ 是策略的另一份冻结副本，固定为训练开始之前的取值（不会被优化器更新，也与
 $\theta_{\mathrm{old}}$ 无关）。例如，当 $\varepsilon = 0.2$ 时，四组
-$(\rho_i, A_i) \in \{(0.7,1), (1.5,1), (0.7,-1), (1.5,-1)\}$ 对应的裁剪值为
-$\operatorname{clip}(\rho_i,0.8,1.2) \in \{0.8, 1.2, 0.8, 1.2\}$，于是
+$`(\rho_i, A_i) \in \{(0.7,1), (1.5,1), (0.7,-1), (1.5,-1)\}`$ 对应的裁剪值为
+$`\mathrm{clip}(\rho_i,0.8,1.2) \in \{0.8, 1.2, 0.8, 1.2\}`$，于是
 
 ```text
 rho_i * A_i          =  0.7,  1.5, -0.7, -1.5
@@ -182,14 +182,14 @@ if __name__ == "__main__":
 
 结合上面定义的量，回答下面关于修复后训练器的问题。
 
-**(a)** 在某个外层步的第一个内层步，$\theta$ 恰好等于 $\theta_{\mathrm{old}}$。推导此时的
+**(a)** 在某个外层步的第一个内层步，$`\theta`$ 恰好等于 $\theta_{\mathrm{old}}$。推导此时的
 $\partial(\rho_i A_i)/\partial\theta$，证明它等于朴素策略梯度（REINFORCE）项
 $A_i \nabla_\theta \log\pi_\theta(o_i\mid a,b)$，并说明此时 $\rho_i = 1$ 不会引发任何裁剪。
 解释为什么代理目标（surrogate）的梯度与 REINFORCE 梯度之间的这种相等关系只能在每个外层步的第一个内层步成立，
-以及为什么从第二个内层步开始，$\rho_i$ 一般就不再是 $1$ 了。
+以及为什么从第二个内层步开始，$`\rho_i`$ 一般就不再是 $1$ 了。
 
 **(b)** 当 $\varepsilon = 0.2$ 时，给出一般规律（任意 $\rho$、任意 $A$ 的符号）：什么时候
-$\min(\cdot,\cdot)$ 选中的是 $\operatorname{clip}(\rho,1-\varepsilon,1+\varepsilon)A$ 而不是
+$\min(\cdot,\cdot)$ 选中的是 $\mathrm{clip}(\rho,1-\varepsilon,1+\varepsilon)A$ 而不是
 $\rho A$，以及在那个区域里 $\partial(\text{代理目标})/\partial\rho$ 等于多少。
 
 **(c)** 证明对任意一组都有 $\frac{1}{G}\sum_{i=1}^G A_i = 0$，这是公式本身决定的。用这一点解释组均值
@@ -199,7 +199,7 @@ $\rho A$，以及在那个区域里 $\partial(\text{代理目标})/\partial\rho$
 但 $G$ 个奖励恰好全部相等的组会返回什么。解释为什么 `ADV_EPS` 能修好其中一种情况，却修不好另一种。
 
 **(e)** $\varepsilon$ 限制的是 $\rho_i$ 相对 $\theta_{\mathrm{old}}$ 能移动多远，而
-$\theta_{\mathrm{old}}$ 在每个外层步开始时都会被重新设定；$\beta$ 惩罚的是相对 $\pi_{\mathrm{ref}}$
+$\theta_{\mathrm{old}}$ 在每个外层步开始时都会被重新设定；$`\beta`$ 惩罚的是相对 $\pi_{\mathrm{ref}}$
 的距离，而 $\pi_{\mathrm{ref}}$ 在整个训练过程中都固定不变。解释这两项各自限制的是许多个外层步之后的什么量，
 以及当 $\beta \to 0$ 和 $\beta \to \infty$ 时，定性地看会发生什么变化。
 
@@ -236,7 +236,7 @@ actions = torch.multinomial(probs_old, 1, generator=rng).squeeze(1)   # was torc
 
 **Bug 2：`group_advantages` 里的 `return (rewards - mean) / std`。** 当一个组里的每个响应得到的奖励都相同时——
 每个响应与组均值的偏差都恰好是 $0$——`std` 并不是“接近”零，而是恰好等于 $0$，而 $0/0$ 得到的是 `nan`，
-不是一个很大或很小的数。在 `batch_size=100`、`group_size=16`、策略又是刚初始化、准确率接近 $10\%$ 的情况下，
+不是一个很大或很小的数。在 `batch_size=100`、`group_size=16`、策略又是刚初始化、准确率接近 $`10\%`$ 的情况下，
 100 个组全都至少包含一个正确响应的概率微乎其微，所以这个 `nan` 在第一次优化器更新时就会出现。
 `loss.backward()` 会把 `nan` 写进每个参数的梯度，`opt.step()` 又会把 `nan` 永久地写进每个参数本身——
 等 bug 1 修好之后，下一次 `torch.multinomial` 调用崩溃，其实是*这个* bug 的下游症状，而不是一个新 bug。
@@ -250,7 +250,7 @@ return (rewards - mean) / (std + ADV_EPS)     # was (rewards - mean) / std
 `logp_old` 已经在 `torch.no_grad()` 下，从 rollout 快照 $\theta_{\mathrm{old}}$ 正确地计算出来了。
 被标出的这一行却在每一次内层迭代里，用*当前*策略的对数概率重新覆盖了这个名字，`.detach()` 在这里只是
 阻断了梯度流向它，并没有把它的取值锁定在 rollout 快照上。于是 `logp_new` 和这里的 `logp_old` 总是来自
-同一次前向计算，`logp_new - logp_old` 恒为 $0$，$\rho_i$ 在每一个内层步都恒等于 $1$，而不仅仅是第一步——
+同一次前向计算，`logp_new - logp_old` 恒为 $0$，$`\rho_i`$ 在每一个内层步都恒等于 $1$，而不仅仅是第一步——
 第一步比率恰好为 $1$ 本来是对的（见 Part 2a）。由于 $\rho_i$ 永远不会离开 $[1-\varepsilon, 1+\varepsilon]$，
 裁剪从未触发，它本该起到的信任域（trust region）约束也就悄悄失效了：每个内层步实际上都在*当前*参数上做了
 一次未经修正的 REINFORCE 更新，重复使用最初 rollout 算出的优势值，而这些优势值随着内层步的推进只会越来越“过时”。
@@ -267,7 +267,7 @@ ratio = torch.exp(logp_new - logp_old)      # logp_old: the fixed value from bef
 **(a)** 在第一个内层步，还没有发生任何更新，所以 $\theta = \theta_{\mathrm{old}}$，
 $\log\pi_\theta(o_i\mid a,b)$（计算图中一个带梯度的节点）在数值上等于
 $\log\pi_{\theta_{\mathrm{old}}}(o_i\mid a,b)$（之前存下来的一个已分离的常数），于是
-$\rho_i = \exp(0) = 1$。记 $x(\theta) = \log\pi_\theta(o_i\mid a,b)$，$c$ 为那个已分离的常数，则
+$\rho_i = \exp(0) = 1$。记 $x(\theta) = \log\pi_\theta(o_i\mid a,b)$，$`c`$ 为那个已分离的常数，则
 $\rho_i(\theta) = \exp(x(\theta) - c)$，从而
 
 ```math
@@ -276,16 +276,16 @@ $\rho_i(\theta) = \exp(x(\theta) - c)$，从而
 ```
 
 在 $\rho_i = 1$ 处即为 $\partial(\rho_i A_i)/\partial\theta = A_i\nabla_\theta\log\pi_\theta(o_i\mid a,b)$，
-恰好就是 REINFORCE 项。由于 $\rho_i = 1 \in [1-\varepsilon, 1+\varepsilon]$，$\min(\cdot,\cdot)$ 的两个分支
+恰好就是 REINFORCE 项。由于 $\rho_i = 1 \in [1-\varepsilon, 1+\varepsilon]$，$`\min(\cdot,\cdot)`$ 的两个分支
 在这一点上也相等，所以裁剪在这个具体点上不改变任何东西。这种相等只是因为 $c$ 恰好等于 $x(\theta)$ 在这一瞬间的取值；
-从第二个内层步开始，$\theta$ 已经因为第一步的更新而偏离了 $\theta_{\mathrm{old}}$，而
+从第二个内层步开始，$`\theta`$ 已经因为第一步的更新而偏离了 $\theta_{\mathrm{old}}$，而
 $c = \log\pi_{\theta_{\mathrm{old}}}(o_i\mid a,b)$ 却始终固定在任何更新之前的取值，因此一般有
-$x(\theta) \ne c$，$\rho_i \ne 1$：代理目标的梯度这时才真正不同于朴素的 REINFORCE，被策略在这批数据上
+$x(\theta) \ne c$，$`\rho_i \ne 1`$：代理目标的梯度这时才真正不同于朴素的 REINFORCE，被策略在这批数据上
 已经移动了多远重新加权（并可能被裁剪）。这也解释了为什么 Part 1c 里的那个 bug 在 `inner_steps == 1` 时
 是看不出来的：只有一个内层步时，有 bug 的和正确的 `logp_old` 在数值上完全一样，两种实现算出的是同一次更新。
 
-**(b)** 当且仅当 $\rho$ 已经*朝着 $A$ 的符号所偏好的方向*移出了 $[1-\varepsilon,1+\varepsilon]$ 时，
-$\min(\cdot,\cdot)$ 选中的才是 $\operatorname{clip}(\rho,1-\varepsilon,1+\varepsilon)A$ 而不是 $\rho A$：
+**(b)** 当且仅当 $\rho$ 已经*朝着 $`A`$ 的符号所偏好的方向*移出了 $[1-\varepsilon,1+\varepsilon]$ 时，
+$\min(\cdot,\cdot)$ 选中的才是 $\mathrm{clip}(\rho,1-\varepsilon,1+\varepsilon)A$ 而不是 $\rho A$：
 即 $\rho > 1+\varepsilon$ 且 $A>0$（已经把一个好响应的概率提得超出了信任域），或者 $\rho < 1-\varepsilon$
 且 $A<0$（已经把一个差响应的概率压得超出了信任域）。题目给出的四组取值恰好覆盖了这两种情况及其反面：
 
@@ -296,27 +296,27 @@ $\min(\cdot,\cdot)$ 选中的才是 $\operatorname{clip}(\rho,1-\varepsilon,1+\v
 (rho, A) = (1.5, -1): unclipped -1.5 < clipped -1.2 -> min picks -1.5 (unclipped; not overshot)
 ```
 
-裁剪分支被选中时，$\operatorname{clip}(\rho,\dots)$ 在局部相对 $\rho$ 是常数，所以
+裁剪分支被选中时，$`\mathrm{clip}(\rho,\dots)`$ 在局部相对 $\rho$ 是常数，所以
 $\partial(\text{代理目标})/\partial\rho = 0$：没有任何梯度信号继续把 $\rho$ 往那个方向推。未裁剪分支被
 选中时——包括 $\rho$ 移动方向与 $A$ 相反的所有情形——梯度就是未经削弱的 $A$：裁剪从不会阻止一次修正，
 只会阻止对一次已经被过度利用的移动的延续。
 
 **(c)** $\sum_{i=1}^G (r_i - \bar r) = \sum_i r_i - G\bar r = G\bar r - G\bar r = 0$，而组内每个 $i$
-都除以同一个 $\operatorname{std}(r) + \epsilon_{\mathrm{adv}}$，这个等于零的性质自然保留：
-$\sum_i A_i = 0/(\operatorname{std}(r)+\epsilon_{\mathrm{adv}}) = 0$。在 actor-critic 的估计量
+都除以同一个 $\mathrm{std}(r) + \epsilon_{\mathrm{adv}}$，这个等于零的性质自然保留：
+$\sum_i A_i = 0/(\mathrm{std}(r)+\epsilon_{\mathrm{adv}}) = 0$。在 actor-critic 的估计量
 $\frac1G\sum_i (r_i - b(s))\nabla_\theta\log\pi_\theta(o_i\mid s)$ 中，任何不依赖于 $o_i$ 的基线 $b(s)$
 都不会引入偏差，因为对固定的 $s$ 有
 $\sum_o \pi_\theta(o\mid s)\nabla_\theta\log\pi_\theta(o\mid s) = \nabla_\theta \sum_o \pi_\theta(o\mid s) = \nabla_\theta 1 = 0$——
-减去 $b(s)$ 在期望上贡献恰好是 $0$，而当 $b(s)$ 接近 $\mathbb{E}_{o\sim\pi}[r(o,s)\mid s]$ 时，通常还能降低
+减去 $b(s)$ 在期望上贡献恰好是 $0$，而当 $b(s)$ 接近 $`\mathbb{E}_{o\sim\pi}[r(o,s)\mid s]`$ 时，通常还能降低
 估计量的方差。一个学出来的 $V_\phi(s)$ 正是通过回归来逼近这同一个条件期望，代价是要多训练一个网络、
 一个额外的优化器，以及它自己的近似误差。组均值 $\bar r$ 则是用这个精确 prompt 的 $G$ 个新样本直接估计出的
-同一个量，因此不需要第二个网络就能起到同样的方差缩减作用；再除以 $\operatorname{std}(r)$，则进一步把不同组
+同一个量，因此不需要第二个网络就能起到同样的方差缩减作用；再除以 $\mathrm{std}(r)$，则进一步把不同组
 之间奖励分散程度不同的问题归一化掉，让各组的优势值可以互相比较。
 
 **(d)** 当 $G=1$ 时，`rewards.std(dim=1)` 要把偏差平方和除以 $G-1=0$：结果是 `nan`，与 `ADV_EPS` 无关，
 因为 `nan + ADV_EPS` 仍然是 `nan`——对单个样本而言，这个估计量本身就没有定义，所以 `group_advantages`
 根本不能用在 $G=1$ 的情形上。而当 $G\ge2$ 且这 $G$ 个奖励恰好全部相等时，每个偏差都恰好是 $0$，
-所以 `std` 是一个有定义的、有限的 $0$（$G$ 个零求和，再除以 $G-1>0$）；真正出问题的是*随后*
+所以 `std` 是一个有定义的、有限的 $0$（$`G`$ 个零求和，再除以 $G-1>0$）；真正出问题的是*随后*
 `(rewards - mean) / std` 这一步的 $0/0$。`ADV_EPS` 修复的正是这第二种情况，把它变成
 $0/(0+\epsilon_{\mathrm{adv}}) = 0$——一个“这个组没有信号”的、有定义的优势值，而不是 `nan`——但它修不好
 第一种情况，因为参与除法的分子分母在那之前就已经是 `nan` 了。
@@ -328,14 +328,14 @@ $\beta D_{\mathrm{KL}}(\pi_\theta\Vert\pi_{\mathrm{ref}})$ 则是相对同一个
 在整个训练过程中持续计算的，所以只有它才限制了累积的漂移。当 $\beta\to0$ 时，这个锚点消失了：单个外层步
 仍然受裁剪的信任域约束，但只要外层步足够多，没有什么能阻止 $\pi_\theta$ 相对 $\pi_{\mathrm{ref}}$ 任意远离——
 在奖励不像本题这样严格可验证的场景里，这正是 reward hacking（见追问）变得可能的地方。当 $\beta\to\infty$
-时，KL 项会主导 $L(\theta)$，$\pi_\theta$ 无论奖励信号如何都会被钉在 $\pi_{\mathrm{ref}}$ 附近，训练也就
+时，KL 项会主导 $L(\theta)$，$`\pi_\theta`$ 无论奖励信号如何都会被钉在 $\pi_{\mathrm{ref}}$ 附近，训练也就
 不再提升奖励了。
 
 ### 追问
 
 - **`ratio = logp_new - logp_old`，不取 `exp`。** 对很小的更新而言，由于 $x$ 接近 $0$ 时
   $\log(1+x)\approx x$，这个近似还算贴近真实比率，模型往往仍然能学到一些东西；问题在于结构性，而不是
-  立即显现。此时 $\operatorname{clip}$ 裁剪的是一个*对数*差到 $[-\varepsilon,\varepsilon]$，而不是一个
+  立即显现。此时 $\mathrm{clip}$ 裁剪的是一个*对数*差到 $[-\varepsilon,\varepsilon]$，而不是一个
   概率比率到 $[1-\varepsilon,1+\varepsilon]$——一旦 $|x|$ 不再很小，这在概率意义上是一个窄得多的区间——
   而且真实比率的下界是 $0$（一个策略现在强烈不喜欢的 token，对代理目标的贡献至多是 $-A_i$），原始的
   对数差却没有下界，于是单个被极度压低概率的 token 就可能主导整个 batch 的梯度。
@@ -346,8 +346,8 @@ $\beta D_{\mathrm{KL}}(\pi_\theta\Vert\pi_{\mathrm{ref}})$ 则是相对同一个
   $0$，于是该组每个 $i$ 的 $A_i = 0$（见 Part 2d）——无论这个共同的响应是对是错：一个策略已经把它变得
   近乎确定性的 prompt，不论那个确定性的答案对不对，都不会再为自己产生任何梯度信号。让 KL 项指向一个熵更高的
   $\pi_{\mathrm{ref}}$ 是常见的缓解办法，因为它直接惩罚策略把概率质量过度集中的行为。
-- **按 token 平均还是按序列平均。** 当响应有多个 token 时，$\log\pi_\theta(o\mid a,b)$ 是响应各 token
-  对数概率之和，$\rho_i$ 也就是逐 token 相乘累积起来的；如果在整个 batch 里按 token 对代理目标取平均
+- **按 token 平均还是按序列平均。** 当响应有多个 token 时，$`\log\pi_\theta(o\mid a,b)`$ 是响应各 token
+  对数概率之和，$`\rho_i`$ 也就是逐 token 相乘累积起来的；如果在整个 batch 里按 token 对代理目标取平均
   （而不是按响应取平均、或者先按响应再按 prompt 取平均），更长的响应仅仅因为包含更多 token，就会在梯度里
   获得更大的总权重，而与它们实际好不好无关。
 - **GRPO 相对 PPO。** GRPO 完全去掉了 PPO 里学出来的价值网络（见 Part 2c），少训练一个模型，也去掉了

@@ -172,7 +172,7 @@ Level 3 的解析，把它的地址列表连同一个过期时间一起存下来
 最初被调用时的那个名称——解析 `"www.acme.com."` 绝不会为 `"edge.acme.com."` 或者链上路过的其他任何
 名称建立缓存条目。
 
-示例，接着 Level 2 的那条链（`www.acme.com.` 的 ttl 是 $60$，$\to$ `edge.acme.com.` 的 ttl 是 $30$，
+示例，接着 Level 2 的那条链（`www.acme.com.` 的 ttl 是 $60$，$`\to`$ `edge.acme.com.` 的 ttl 是 $30$，
 $\to$ `api.acme.com.` 的 ttl 是 $60$，是一条 `ARecord`）：
 
 ```text

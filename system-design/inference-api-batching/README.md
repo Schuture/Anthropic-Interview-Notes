@@ -104,7 +104,7 @@ That floor is not a target to provision at: it leaves almost no spare aggregate 
 replicas supply $16 \times 640 = 10{,}240$ requests/s against $10{,}000$/s of demand, and losing even
 one to a failed health check or a rolling restart drops capacity to $15 \times 640 = 9{,}600$/s, below
 demand, with queueing delay growing without bound until it returns), and even while every replica
-stays healthy, running each at $\rho = 625/640 \approx 97.7\%$ utilization (the load $16$ replicas
+stays healthy, running each at $`\rho = 625/640 \approx 97.7\%`$ utilization (the load $16$ replicas
 would split evenly) leaves batches almost always full but pushes tail latency up: the discrete-event
 simulation below measures p99 near 290 ms and a maximum near 390 ms at that utilization, under 500 ms
 only as long as nothing goes wrong, with none of the slack a burstier-than-Poisson arrival process
@@ -114,7 +114,7 @@ would need.
 (a) shows a short `max_wait` achieves once there is any backlog at all. At 75% fill one replica
 finishes $48 / 0.1 = 480$ requests/s, so the raw requirement is $8{,}000 / 480 \approx 16.7$ replicas;
 with 20% headroom for rolling deploys and uneven load, $8{,}000 \times 1.2 / 480 = 20$ replicas
-exactly. At 20 replicas the realized load is $8{,}000 / 20 = 400$/s per replica — $\rho = 62.5\%$ —
+exactly. At 20 replicas the realized load is $8{,}000 / 20 = 400$/s per replica — $`\rho = 62.5\%`$ —
 and the simulation confirms average fill 40/64 (62.5%), p50 wait 150 ms, p95 195 ms, p99 199 ms,
 maximum about 201 ms: inside the 500 ms SLO even after a further ~25 ms of edge, admission, and
 network overhead, with about 275 ms of margin for real traffic's extra burstiness.
@@ -122,8 +122,8 @@ network overhead, with about 275 ms of margin for real traffic's extra burstines
 **Offline pool.** With no per-request latency target, the offline dispatcher sets a long `max_wait`
 (400 ms here) and lets batches fill by size almost every time, targeting 100% fill: $2{,}000 / 640 =
 3.125$ replicas raw, $2{,}000 \times 1.2 / 640 = 3.75$, rounded up to **4 replicas**. At 4 replicas
-the realized load is $500$/s per replica ($\rho = 78.1\%$); the simulation confirms average fill
-64.0/64 ($\approx 100\%$), p50 162 ms, p95 226 ms, p99 243 ms — irrelevant against a minutes-level job
+the realized load is $500$/s per replica ($`\rho = 78.1\%`$); the simulation confirms average fill
+64.0/64 ($`\approx 100\%`$), p50 162 ms, p95 226 ms, p99 243 ms — irrelevant against a minutes-level job
 SLA.
 
 **Fleet at peak.** $20 + 4 = 24$ replicas (24 GPUs) for this model at its stated traffic share — 50%

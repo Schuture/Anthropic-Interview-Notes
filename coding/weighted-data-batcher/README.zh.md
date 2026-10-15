@@ -33,7 +33,7 @@ $K$ 个数据集中抽取。下面每一问都遵循同一条关于数据集*之
 ### Part 1 —— 精确加权批次
 
 这一问假设 `batch_size` 能被 $W$ 整除。对每个 $k$，`next_batch()` 恰好在 batch 中放入数据集 $d_k$ 的
-$\mathrm{batch\_size} \cdot w_k / W$ 个样本，这些样本连续排列，顺序就是该数据集自己的迭代器产出的顺序；
+$`\mathrm{batch\_size} \cdot w_k / W`$ 个样本，这些样本连续排列，顺序就是该数据集自己的迭代器产出的顺序；
 这 $K$ 段依次按 $d_1, d_2, \ldots, d_K$ 的顺序拼接。
 
 ```py
@@ -86,18 +86,18 @@ b2.next_batch()              # [code-4, code-5, code-6, code-7, math-2, math-3, 
 ### Part 3 —— batch_size 不能整除 W
 
 去掉 Part 1 中「能整除」的假设。`next_batch()` 仍然返回 `batch_size` 个按 `weights` 比例抽取的样本，但每个
-数据集的配额 $\mathrm{batch\_size} \cdot w_k / W$ 现在一般不再是整数。`DataBatcher` 增加两个构造参数，
+数据集的配额 $`\mathrm{batch\_size} \cdot w_k / W`$ 现在一般不再是整数。`DataBatcher` 增加两个构造参数，
 `allocation` 和 `seed`；不论 `allocation` 取什么值，只要 `batch_size` 恰好能被 $W$ 整除，`next_batch()`
 仍然退回 Part 1 的精确规则。
 
 不能整除时，batch 改为逐个样本地构造，一共做 `batch_size` 次选择，每次决定下一个样本取自哪个数据集；batch
 中的 `batch_size` 个样本按这些选择发生的顺序排列，不再按数据集分块。记 $n$ 为一个 batcher 自构造以来一共
-做过多少次这样的选择（累计所有 `next_batch()` 调用，包括当前这次之前的调用），记 $\mathrm{count}_k(n)$ 为
+做过多少次这样的选择（累计所有 `next_batch()` 调用，包括当前这次之前的调用），记 $`\mathrm{count}_k(n)`$ 为
 前 $n$ 次选择中选中数据集 $d_k$ 的次数；数据集 $d_k$ 在前 $n$ 次选择中的*理想份额*（ideal share）是
 $n w_k / W$，一般不是整数。
 
 - `allocation="deterministic"`：只根据当前各数据集的计数、不引入任何随机性来做选择，使得对每个 $k$ 和每个
-  $n$（不仅是 $n$ 恰为 `batch_size` 倍数的时刻），都有 $\lvert \mathrm{count}_k(n) - n w_k / W \rvert \le C$
+  $n$（不仅是 $n$ 恰为 `batch_size` 倍数的时刻），都有 $`\lvert \mathrm{count}_k(n) - n w_k / W \rvert \le C`$
   成立，其中常数 $C$ 不依赖于 $n$。写出你的规则，并证明这样一个 $C$。
 - `allocation="stochastic"`：按同样的字母顺序，对 $w_1, \ldots, w_K$ 建立一个前缀和数组。在 batcher 上保留
   一个 `random.Random(seed)` 实例，每次选择时从中抽取一个 $[0, W)$ 内的均匀整数，再对前缀和数组做二分查找，
@@ -173,7 +173,7 @@ class DataBatcher:
         return batch
 ```
 
-`next_batch()` 的开销是 $O(\mathrm{batch\_size})$：`_take` 从不会比它实际返回的样本多迭代一步，打开一个
+`next_batch()` 的开销是 $`O(\mathrm{batch\_size})`$：`_take` 从不会比它实际返回的样本多迭代一步，打开一个
 迭代器则按假设是 $O(1)$。batcher 自身的状态是 $O(K)$，就是两个小 `dict`，与已经产出过多少个 batch 无关。
 
 ### Part 2
@@ -197,39 +197,39 @@ class DataBatcher(DataBatcher):
 
 在 `load_state_dict` 里选择惰性重开、而不是立即重开，意味着恢复这一步本身从不调用 `get_iterator`：开销
 落在 `next_batch()` 接下来真正用到的数据集上，每个被用到的数据集只需付出一次，且每次都直接落在保存的
-偏移量上——每个被用到的数据集是 $O(1)$，永远不会是 $O(n)$（$n$ 为此前已产出的样本数），不需要任何特殊
+偏移量上——每个被用到的数据集是 $O(1)$，永远不会是 $O(n)$（$`n`$ 为此前已产出的样本数），不需要任何特殊
 处理就满足了 Part 2 的要求。
 
 ### Part 3
 
-**确定性做法。** 为每个数据集 $d_k$ 维护它的比值 $p_k(n) = \mathrm{count}_k(n) / w_k$——即按权重归一化
+**确定性做法。** 为每个数据集 $d_k$ 维护它的比值 $`p_k(n) = \mathrm{count}_k(n) / w_k`$——即按权重归一化
 后的计数——每次选择当前比值最小的数据集，比值相同时按字母序较小的名字打破平局。用
-$\mathrm{count}_i(n) \cdot w_j$ 与 $\mathrm{count}_j(n) \cdot w_i$ 交叉相乘来比较 $p_i(n)$ 与 $p_j(n)$，
+$`\mathrm{count}_i(n) \cdot w_j`$ 与 $`\mathrm{count}_j(n) \cdot w_i`$ 交叉相乘来比较 $p_i(n)$ 与 $p_j(n)$，
 可以让比较保持精确：这里都是不大的整数，但用浮点除法仍可能把两个数学上相等的比值舍入到两个不同的相邻
 浮点数，从而把平局判错方向。
 
 **引理。** 对任意两个数据集 $d_i, d_j$ 和每个 $n \ge 0$，都有
-$\lvert p_i(n) - p_j(n) \rvert \le \max(1/w_i,\, 1/w_j)$。
+$`\lvert p_i(n) - p_j(n) \rvert \le \max(1/w_i,\, 1/w_j)`$。
 
 *证明。* 只看落在 $d_i$ 或 $d_j$ 上的那些选择构成的子序列；其余选择不改变这两个比值。子序列中落在
-（比如）$d_i$ 上的每一次选择，都是因为当时 $d_i$ 的比值在*全部* $K$ 个数据集中最小，特别是不大于 $d_j$
-的比值——所以限制在这个子序列上看，规则恰好就是「$d_i$、$d_j$ 两者中当前比值更小或打平的那个，按
+（比如）$`d_i`$ 上的每一次选择，都是因为当时 $d_i$ 的比值在*全部* $K$ 个数据集中最小，特别是不大于 $d_j$
+的比值——所以限制在这个子序列上看，规则恰好就是「$`d_i`$、$`d_j`$ 两者中当前比值更小或打平的那个，按
 $1/w_i$ 或 $1/w_j$ 前进一步」，其余 $K - 2$ 个数据集完全不参与。对这个子序列的长度做归纳。长度为 0 时
-两个比值都是 0，差为 0。假设结论成立，且（比如）$d_i$ 的比值更小或打平，于是它被选中：记
-$M = \max(1/w_i, 1/w_j)$，$g$ 为这次选择前的差 $p_j(n) - p_i(n)$，归纳假设给出 $0 \le g \le M$。选择
+两个比值都是 0，差为 0。假设结论成立，且（比如）$`d_i`$ 的比值更小或打平，于是它被选中：记
+$M = \max(1/w_i, 1/w_j)$，$`g`$ 为这次选择前的差 $p_j(n) - p_i(n)$，归纳假设给出 $0 \le g \le M$。选择
 之后差变为 $g - 1/w_i$，它落在 $[-1/w_i,\ M - 1/w_i] \subseteq [-M, M]$ 中，因为 $1/w_i \le M$。
 $\blacksquare$
 
-**推论。** 对每个 $k$ 和每个 $n$，都有 $\lvert \mathrm{count}_k(n) - n w_k / W \rvert \le 1 + K$。
+**推论。** 对每个 $k$ 和每个 $n$，都有 $`\lvert \mathrm{count}_k(n) - n w_k / W \rvert \le 1 + K`$。
 
-*证明。* 由于 $n = \sum_j \mathrm{count}_j(n) = \sum_j w_j\, p_j(n)$，两边除以 $W$，就把 $n / W$ 写成了
+*证明。* 由于 $`n = \sum_j \mathrm{count}_j(n) = \sum_j w_j\, p_j(n)`$，两边除以 $W$，就把 $n / W$ 写成了
 $p_j(n)$ 以 $w_j / W$（和为 1）为权重的加权平均，于是
 
 ```math
 p_k(n) - \frac{n}{W} = \sum_{j=1}^{K} \frac{w_j}{W}\bigl(p_k(n) - p_j(n)\bigr).
 ```
 
-由引理，$\lvert p_k(n) - p_j(n) \rvert \le \max(1/w_k, 1/w_j) \le 1/w_k + 1/w_j$，于是
+由引理，$`\lvert p_k(n) - p_j(n) \rvert \le \max(1/w_k, 1/w_j) \le 1/w_k + 1/w_j`$，于是
 
 ```math
 \left\lvert p_k(n) - \frac{n}{W} \right\rvert
@@ -238,8 +238,8 @@ p_k(n) - \frac{n}{W} = \sum_{j=1}^{K} \frac{w_j}{W}\bigl(p_k(n) - p_j(n)\bigr).
   = \frac{1}{w_k} + \frac{K}{W}.
 ```
 
-两边乘以 $w_k$，得到 $\lvert \mathrm{count}_k(n) - n w_k / W \rvert = w_k \lvert p_k(n) - n/W \rvert
-\le 1 + K w_k / W \le 1 + K$，因为 $w_k \le W$。$\blacksquare$
+两边乘以 $w_k$，得到 $`\lvert \mathrm{count}_k(n) - n w_k / W \rvert = w_k \lvert p_k(n) - n/W \rvert
+\le 1 + K w_k / W \le 1 + K`$，因为 $w_k \le W$。$`\blacksquare`$
 
 这个界在实践中相当宽松：在下面验证代码遍历的大量随机权重组合和数千个槽位上，观察到的最大偏差都不到 2，
 与 $K$ 无关。
@@ -303,7 +303,7 @@ class DataBatcher(DataBatcher):
 这两种分配方式的取舍并不相同。确定性方案完全没有方差——推论约束的是它的最坏情形，而不只是平均情形——
 它的状态就是 Part 2 已经保存的那些整数偏移量，什么时候做检查点对它没有任何影响。它打破平局的方式也每次
 都一样，所以在一串比值打平的选择上（权重相等或成比例时），每次出现完全相同的平局，赢的都是同一个数据
-集，使得同样的数据在不同 epoch 里，batch 内部的选择模式本身也是固定的。随机方案是无偏的——$d_k$ 在 $n$
+集，使得同样的数据在不同 epoch 里，batch 内部的选择模式本身也是固定的。随机方案是无偏的——$`d_k`$ 在 $n$
 次抽取后的期望计数恰好是 $n w_k / W$——但它的实际计数是 $n$ 次相互依赖的随机抽取之和，围绕这个期望值
 存在真实的方差，没有任何东西能像推论那样约束某一次具体运行的偏差。这种随机性本身也必须是可复现的，才
 谈得上可以做检查点：等做检查点的时候，`random.Random` 对象早已往前走了若干步，所以 `state_dict()` 必须
@@ -326,7 +326,7 @@ $O(K)$，随机方案只是再加上一份固定的、很小的生成器状态�
   推论给出的界依然成立，只是现在的 $n = 0$ 锚定在权重变化的那一刻，而不是 batcher 最初构造的时刻。
 - 在数据并行的多个 rank 之间分片、且互不重叠：在构造时就给 $R$ 个 rank 中的每个 rank $r$ 分配每个数据集
   偏移量范围里专属的一段——对长度为 $L$ 的数据集，偏移量落在
-  $\bigl[\, r \lfloor L/R \rfloor,\ (r+1)\lfloor L/R \rfloor \,\bigr)$ 之内——并且回绕时只在这一段自己的
+  $`\bigl[\, r \lfloor L/R \rfloor,\ (r+1)\lfloor L/R \rfloor \,\bigr)`$ 之内——并且回绕时只在这一段自己的
   长度内进行，而不是对整个 $L$ 取模。这样一来，任何一个 rank 调用 `get_iterator` 用到的偏移量，都不会有
   另一个 rank 也用到；代价是当 $R$ 不能整除 $L$ 时，各个 rank 要经过略有不同的样本数才会回到自己那一段
   的起点。

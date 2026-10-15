@@ -21,16 +21,18 @@ vectors in $\mathbb{R}^d$. `K` has shape `(B, T_k, d)`: `T_k` key vectors in the
 the queries. `V` has shape `(B, T_k, d_v)`: the `T_k` value vectors, one per key, whose dimension $d_v$
 need not equal $d$. For batch element $b$, query $i$ and key $j$,
 
-$$\mathrm{score}_{b,i,j} = \frac{Q_{b,i} \cdot K_{b,j}}{\sqrt{d}}, \qquad
+```math
+\mathrm{score}_{b,i,j} = \frac{Q_{b,i} \cdot K_{b,j}}{\sqrt{d}}, \qquad
 \mathrm{weights}_{b,i,:} = \mathrm{softmax}(\mathrm{score}_{b,i,:}), \qquad
-\mathrm{output}_{b,i} = \sum_{j=0}^{T_k-1} \mathrm{weights}_{b,i,j}\, V_{b,j},$$
+\mathrm{output}_{b,i} = \sum_{j=0}^{T_k-1} \mathrm{weights}_{b,i,j}\, V_{b,j},
+```
 
 the softmax taken over $j$, the last axis of `score`. An optional boolean `mask` of shape
 `(B, T_q, T_k)` restricts which keys a query may use: `mask[b, i, j]` is `True` exactly when query $i$
 of batch $b$ may attend to key $j$, and `False` when it may not; `mask=None` means every query may
 attend to every key. A masked key is excluded from the softmax by setting its score to $-\infty$ before
 exponentiating, never by zeroing its weight after normalizing. If every key is masked out for some query
-($\mathrm{mask}_{b,i,:}$ all `False`), that query's weights are all $0$ and its output is the zero
+($`\mathrm{mask}_{b,i,:}`$ all `False`), that query's weights are all $0$ and its output is the zero
 vector of shape $(d_v,)$, rather than $0/0$.
 
 Compute the two contractions above — $QK^\top$ and $\mathrm{weights} \cdot V$ — with `np.einsum`;
@@ -114,8 +116,10 @@ query 1 may attend to keys 0 and 1:
 applies a learned elementwise affine map with scale $\gamma \in \mathbb{R}^d$ and shift
 $\beta \in \mathbb{R}^d$:
 
-$$\mathrm{LN}(v)_k = \frac{v_k - \mu}{\sqrt{\sigma^2 + \epsilon}}\,\gamma_k + \beta_k, \qquad
-\mu = \frac{1}{d}\sum_{k=0}^{d-1} v_k, \qquad \sigma^2 = \frac{1}{d}\sum_{k=0}^{d-1} (v_k - \mu)^2,$$
+```math
+\mathrm{LN}(v)_k = \frac{v_k - \mu}{\sqrt{\sigma^2 + \epsilon}}\,\gamma_k + \beta_k, \qquad
+\mu = \frac{1}{d}\sum_{k=0}^{d-1} v_k, \qquad \sigma^2 = \frac{1}{d}\sum_{k=0}^{d-1} (v_k - \mu)^2,
+```
 
 with a small constant $\epsilon > 0$ added for numerical safety. Applied to an array `x` of shape
 `(B, T, d)`, it normalizes every one of the $B \times T$ rows independently, each over its own $d$
@@ -185,7 +189,9 @@ weights, V)` sums over the key axis, leaving one output vector per `(batch, quer
 maximum before `np.exp` leaves the softmax unchanged in exact arithmetic: for any constant $m$ that does
 not depend on the summed index $j$,
 
-$$\frac{e^{s_j - m}}{\sum_k e^{s_k - m}} = \frac{e^{-m}e^{s_j}}{e^{-m}\sum_k e^{s_k}} = \frac{e^{s_j}}{\sum_k e^{s_k}},$$
+```math
+\frac{e^{s_j - m}}{\sum_k e^{s_k - m}} = \frac{e^{-m}e^{s_j}}{e^{-m}\sum_k e^{s_k}} = \frac{e^{s_j}}{\sum_k e^{s_k}},
+```
 
 while keeping every exponent $\le 0$, so `np.exp` never overflows. A fully masked row has every score
 $-\infty$, so its maximum is $-\infty$ too, and $-\infty - (-\infty)$ is `nan`; the implementation
@@ -237,13 +243,15 @@ of Part 1 cannot arise in a causal block.
 components, each with mean $0$ and variance $1$, and let every $q_i$ be independent of every $k_j$.
 Then $q \cdot k = \sum_{i=0}^{d_{\text{head}}-1} q_ik_i$, and
 
-$$\mathrm{E}[q \cdot k] = \sum_i \mathrm{E}[q_i]\,\mathrm{E}[k_i] = 0, \qquad
+```math
+\mathrm{E}[q \cdot k] = \sum_i \mathrm{E}[q_i]\,\mathrm{E}[k_i] = 0, \qquad
 \mathrm{Var}(q\cdot k) = \mathrm{E}\Bigl[\bigl(\textstyle\sum_i q_ik_i\bigr)^2\Bigr]
-= \sum_i\sum_j \mathrm{E}[q_ik_iq_jk_j].$$
+= \sum_i\sum_j \mathrm{E}[q_ik_iq_jk_j].
+```
 
 For $i \ne j$, $q_i, k_i, q_j, k_j$ are four mutually independent, zero-mean variables, so
 $\mathrm{E}[q_ik_iq_jk_j] = \mathrm{E}[q_i]\mathrm{E}[k_i]\mathrm{E}[q_j]\mathrm{E}[k_j] = 0$; for
-$i = j$, $\mathrm{E}[q_i^2k_i^2] = \mathrm{E}[q_i^2]\,\mathrm{E}[k_i^2] = 1 \cdot 1 = 1$, using the
+$i = j$, $`\mathrm{E}[q_i^2k_i^2] = \mathrm{E}[q_i^2]\,\mathrm{E}[k_i^2] = 1 \cdot 1 = 1`$, using the
 independence of $q_i$ and $k_i$ and $\mathrm{E}[q_i^2] = \mathrm{Var}(q_i) = 1$. So
 $\mathrm{Var}(q\cdot k) = \sum_{i=0}^{d_{\text{head}}-1} 1 = d_{\text{head}}$: on this model the dot
 product's standard deviation, and so its typical magnitude, grows as $\sqrt{d_{\text{head}}}$. As
@@ -283,8 +291,8 @@ def multi_head_self_attention(X, W_q, W_k, W_v, W_o, n_heads):
 Complexity: the four `(d_model, d_model)` projections cost $O(BTd_{\text{model}}^2)$ together; the
 per-head contractions cost $O(BHT^2d_{\text{head}}) = O(BT^2d_{\text{model}})$, since
 $H \cdot d_{\text{head}} = d_{\text{model}}$; `scores`/`weights` use $O(BHT^2)$ memory. For long
-sequences ($T \gg d_{\text{model}}$) the quadratic-in-$T$ term dominates; for short ones the
-quadratic-in-$d_{\text{model}}$ projections do.
+sequences ($T \gg d_{\text{model}}$) the quadratic-in-$`T`$ term dominates; for short ones the
+quadratic-in-$`d_{\text{model}}`$ projections do.
 
 ### Part 3
 
@@ -306,7 +314,7 @@ input used in the checks ($B=3$, $T=5$, $d=4$):
 
 **`layer_norm`'s `mean`.** `axis=0` reduces over the batch axis instead of the feature axis, so every
 row is centered on the mean of the *same feature across every sequence in the batch* rather than the
-mean of its *own $d$ features* — with $\gamma=1,\beta=0$ and a batch of size $1$ this is especially
+mean of its *own $`d`$ features* — with $\gamma=1,\beta=0$ and a batch of size $1$ this is especially
 visible, since the mean of one element is that element, so `x - mean` is identically $0$ and
 `layer_norm` returns the constant $\beta$ regardless of `x`.
 

@@ -470,7 +470,7 @@ class Engine:
             self._prefill(self.sequences[self.queue.pop_front()])
 ```
 
-`add_request` 是 $O(1)$；`step` 是 $O(r)$，$r$ 是当前等待中的请求数——此时还不会驱逐任何块，
+`add_request` 是 $O(1)$；`step` 是 $O(r)$，$`r`$ 是当前等待中的请求数——此时还不会驱逐任何块，
 每次预填充自己的分配也是 $O(1)$。
 
 ### Level 2
@@ -509,7 +509,7 @@ class Engine(Engine):
 ```
 
 `token_budget` 和 `max_seqs` 默认取一个实际上无限大的值，这样 Level 1 那些只构造 `Engine(num_blocks)`
-的示例，在这一关以及之后的每一关都能不做任何改动地继续通过。`step` 每次调用的开销是 $O(m)$，$m$ 是
+的示例，在这一关以及之后的每一关都能不做任何改动地继续通过。`step` 每次调用的开销是 $O(m)$，$`m`$ 是
 被解码的序列数（受 `max_seqs` 限制）加上这一轮新准入的请求数。
 
 ### Level 3
@@ -596,7 +596,7 @@ class Engine(Engine):
 `lookup_cached` 和 `allocate` 返回的 id，其对应的槽位都保证恰好保存着正确的内容（命中时是由构造
 过程保证的，未命中时是刚刚写入的），所以再往后的代码都不需要知道究竟发生的是哪一种。
 
-预填充的缓存查找开销是 $O(f)$，$f$ 是该序列的满块数；`_register_if_newly_full` 每次调用都会把
+预填充的缓存查找开销是 $O(f)$，$`f`$ 是该序列的满块数；`_register_if_newly_full` 每次调用都会把
 直到新块为止的整条哈希链重新算一遍，开销同样是 $O(f)$，而不是增量维护一个运行哈希所能达到的
 $O(1)$。
 
@@ -666,7 +666,7 @@ class Engine(Engine):
 `step` 后半段的准入循环，相对 Level 3 都没有变化：一个被抢占的序列在解码中途从 `self.running` 中
 消失，正是 `step` 里先取快照、再用 `.get` 这种写法本来就准备容忍的情况。
 
-每次调用 `_allocate_or_preempt` 的开销是 $O(v)$，$v$ 是它在自己的分配成功之前驱逐的序列数，
+每次调用 `_allocate_or_preempt` 的开销是 $O(v)$，$`v`$ 是它在自己的分配成功之前驱逐的序列数，
 再加上分配本身 $O(1)$ 的摊还开销。
 
 ### 追问

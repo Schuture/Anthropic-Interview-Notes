@@ -35,7 +35,7 @@ and states its own rule for the order *within* one dataset's contribution.
 ### Part 1 — Exact weighted batches
 
 Assume for this part that `batch_size` is divisible by $W$. For every $k$, `next_batch()` places exactly
-$\mathrm{batch\_size} \cdot w_k / W$ of dataset $d_k$'s examples in the batch, consecutively, in the order
+$`\mathrm{batch\_size} \cdot w_k / W`$ of dataset $d_k$'s examples in the batch, consecutively, in the order
 its own iterator produced them; the $K$ blocks are concatenated in order $d_1, d_2, \ldots, d_K$.
 
 ```py
@@ -89,7 +89,7 @@ b2.next_batch()              # [code-4, code-5, code-6, code-7, math-2, math-3, 
 ### Part 3 — batch_size not divisible by W
 
 Drop Part 1's divisibility assumption. `next_batch()` still returns `batch_size` examples in proportion to
-`weights`, but the per-dataset quota $\mathrm{batch\_size} \cdot w_k / W$ is now, in general, not an
+`weights`, but the per-dataset quota $`\mathrm{batch\_size} \cdot w_k / W`$ is now, in general, not an
 integer. `DataBatcher` gains two more constructor arguments, `allocation` and `seed`; whichever value
 `allocation` takes, `next_batch()` still falls back to Part 1's exact rule whenever `batch_size` *is*
 divisible by $W$.
@@ -99,12 +99,12 @@ Either way, when `batch_size` is not divisible by $W$, the batch is built one ex
 `batch_size` examples in the order these choices were made, no longer grouped into per-dataset blocks.
 Write $n$ for how many such choices a batcher has made in total since it was constructed (accumulating
 across every `next_batch()` call so far, including calls before the current one), and
-$\mathrm{count}_k(n)$ for how many of the first $n$ choices picked dataset $d_k$; dataset $d_k$'s *ideal
+$`\mathrm{count}_k(n)`$ for how many of the first $n$ choices picked dataset $d_k$; dataset $d_k$'s *ideal
 share* of the first $n$ choices is $n w_k / W$, generally not an integer.
 
 - `allocation="deterministic"`: choose with no randomness, from the running per-dataset counts alone, such
   that for every $k$ and every $n$ (not only when $n$ is a multiple of `batch_size`),
-  $\lvert \mathrm{count}_k(n) - n w_k / W \rvert \le C$ for a constant $C$ that does not depend on $n$.
+  $`\lvert \mathrm{count}_k(n) - n w_k / W \rvert \le C`$ for a constant $C$ that does not depend on $n$.
   State your rule and prove such a $C$ for it.
 - `allocation="stochastic"`: build a prefix-sum array over $w_1, \ldots, w_K$ in the same alphabetical
   order. Keep a `random.Random(seed)` instance on the batcher, and make each choice by drawing a uniform
@@ -184,7 +184,7 @@ class DataBatcher:
         return batch
 ```
 
-`next_batch()` does $O(\mathrm{batch\_size})$ work: `_take` never iterates further than the examples it
+`next_batch()` does $`O(\mathrm{batch\_size})`$ work: `_take` never iterates further than the examples it
 actually returns, and opening an iterator is assumed $O(1)$. The batcher's own state is $O(K)$, two small
 dicts, regardless of how many batches have been produced.
 
@@ -215,15 +215,15 @@ $O(n)$ in how many examples came before it, satisfying Part 2's requirement with
 
 ### Part 3
 
-**Deterministic.** Track, for each dataset $d_k$, its ratio $p_k(n) = \mathrm{count}_k(n) / w_k$ — the
+**Deterministic.** Track, for each dataset $d_k$, its ratio $`p_k(n) = \mathrm{count}_k(n) / w_k`$ — the
 count normalized by weight — and choose whichever dataset currently has the smallest ratio, ties broken
 by the alphabetically smaller name. Comparing $p_i(n)$ and $p_j(n)$ by cross-multiplying
-$\mathrm{count}_i(n) \cdot w_j$ against $\mathrm{count}_j(n) \cdot w_i$ keeps the comparison exact: these
+$`\mathrm{count}_i(n) \cdot w_j`$ against $`\mathrm{count}_j(n) \cdot w_i`$ keeps the comparison exact: these
 are small integers, but float division could still round two mathematically equal ratios to two different
 neighbouring floats and break a tie the wrong way.
 
 **Lemma.** For any two datasets $d_i, d_j$ and every $n \ge 0$,
-$\lvert p_i(n) - p_j(n) \rvert \le \max(1/w_i,\, 1/w_j)$.
+$`\lvert p_i(n) - p_j(n) \rvert \le \max(1/w_i,\, 1/w_j)`$.
 
 *Proof.* Look only at the subsequence of choices that land on $d_i$ or $d_j$; every other choice leaves
 both ratios unchanged. Whenever a choice in this subsequence lands on, say, $d_i$, it is because $d_i$'s
@@ -236,9 +236,9 @@ $M = \max(1/w_i, 1/w_j)$ and $g$ the gap $p_j(n) - p_i(n)$ just before this choi
 $0 \le g \le M$. Afterward the gap is $g - 1/w_i$, which lies in $[-1/w_i,\ M - 1/w_i] \subseteq [-M, M]$
 since $1/w_i \le M$. $\blacksquare$
 
-**Corollary.** For every $k$ and every $n$, $\lvert \mathrm{count}_k(n) - n w_k / W \rvert \le 1 + K$.
+**Corollary.** For every $k$ and every $n$, $`\lvert \mathrm{count}_k(n) - n w_k / W \rvert \le 1 + K`$.
 
-*Proof.* Since $n = \sum_j \mathrm{count}_j(n) = \sum_j w_j\, p_j(n)$, dividing by $W$ writes $n / W$ as a
+*Proof.* Since $`n = \sum_j \mathrm{count}_j(n) = \sum_j w_j\, p_j(n)`$, dividing by $W$ writes $n / W$ as a
 weighted average of the $p_j(n)$ with weights $w_j / W$ summing to 1, so
 
 ```math
@@ -254,8 +254,8 @@ By the Lemma, $\lvert p_k(n) - p_j(n) \rvert \le \max(1/w_k, 1/w_j) \le 1/w_k + 
   = \frac{1}{w_k} + \frac{K}{W}.
 ```
 
-Multiplying by $w_k$ gives $\lvert \mathrm{count}_k(n) - n w_k / W \rvert = w_k \lvert p_k(n) - n/W \rvert
-\le 1 + K w_k / W \le 1 + K$, since $w_k \le W$. $\blacksquare$
+Multiplying by $w_k$ gives $`\lvert \mathrm{count}_k(n) - n w_k / W \rvert = w_k \lvert p_k(n) - n/W \rvert
+\le 1 + K w_k / W \le 1 + K`$, since $w_k \le W$. $\blacksquare$
 
 The bound is loose in practice: across the many random weight sets and thousands of slots exercised by the
 checks below, the worst deviation ever observed is under 2, regardless of $K$.
@@ -349,7 +349,7 @@ stochastic case.
   the change rather than from the batcher's original construction.
 - Sharding across data-parallel ranks without overlap: give rank $r$ of $R$ its own slice of every
   dataset's offset range at construction — for a dataset of length $L$, offsets
-  $\bigl[\, r \lfloor L/R \rfloor,\ (r+1)\lfloor L/R \rfloor \,\bigr)$ — and wrap within that slice's own
+  $`\bigl[\, r \lfloor L/R \rfloor,\ (r+1)\lfloor L/R \rfloor \,\bigr)`$ — and wrap within that slice's own
   length instead of $L$. Ranks then never call `get_iterator` with an offset another rank will also use, at
   the cost of each rank cycling back to its own start after a slightly different number of examples when
   $R$ does not divide $L$ evenly.

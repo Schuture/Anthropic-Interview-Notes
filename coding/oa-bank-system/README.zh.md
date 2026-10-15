@@ -309,7 +309,7 @@ Bank.accept_transfer = accept_transfer
 ```
 
 除了 `_available` 的扫描之外，`transfer` 和 `accept_transfer` 都是 $O(1)$；`_available` 的开销是
-$O(h)$，$h$ 是该账户名下曾经发起过的转账数量，因为已完成或已过期的转账仍然留在 `_holds` 里，并没有
+$O(h)$，$`h`$ 是该账户名下曾经发起过的转账数量，因为已完成或已过期的转账仍然留在 `_holds` 里，并没有
 被移除（在这种规模下这样做很划算，因为在 OA 规模的调用序列里 $h$ 永远不会大到让这次扫描成为瓶颈；
 一个长期存在的账户则应该顺手清理 `_holds`）。
 
@@ -357,8 +357,8 @@ Bank.merge_accounts = merge_accounts
 Bank.get_balance = get_balance
 ```
 
-`merge_accounts` 的开销是 $O(p)$，$p$ 是它需要改指向的转账数量；`get_balance` 的开销是
-$O(\log e)$，$e$ 是该账户当前这一代已经记录下来的余额变化事件数量。
+`merge_accounts` 的开销是 $O(p)$，$`p`$ 是它需要改指向的转账数量；`get_balance` 的开销是
+$O(\log e)$，$`e`$ 是该账户当前这一代已经记录下来的余额变化事件数量。
 
 ### 追问
 

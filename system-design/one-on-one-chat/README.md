@@ -88,9 +88,13 @@ that signal the same way it de-duplicates messages).
 
 **Message rate.** $50{,}000{,}000$ daily actives sending 24 messages a day each gives
 
-$$50{,}000{,}000 \times 24 = 1{,}200{,}000{,}000 \text{ messages/day,}$$
+```math
+50{,}000{,}000 \times 24 = 1{,}200{,}000{,}000 \text{ messages/day,}
+```
 
-$$\text{avg QPS} = \frac{1{,}200{,}000{,}000}{86{,}400} \approx 13{,}889 \text{ messages/s.}$$
+```math
+\text{avg QPS} = \frac{1{,}200{,}000{,}000}{86{,}400} \approx 13{,}889 \text{ messages/s.}
+```
 
 Consumer messaging peaks less sharply than a workplace tool's business-hours peak, since usage spreads
 across evening hours in every time zone rather than concentrating in one region's working day; a 3x

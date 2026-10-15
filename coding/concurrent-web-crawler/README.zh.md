@@ -165,7 +165,7 @@ def crawl(start_url: str, html_parser: HtmlParser) -> list[str]:
     return sorted(visited)
 ```
 
-记 $V$ 为从 `start_url` 可达、互不相同且属于爬取范围的规范化 URL 个数（含 `start_url` 本身），$L$ 为
+记 $V$ 为从 `start_url` 可达、互不相同且属于爬取范围的规范化 URL 个数（含 `start_url` 本身），$`L`$ 为
 所有 `get_urls` 调用返回的链接总数。`crawl` 恰好调用 `get_urls` $V$ 次，并用哈希集合对每个链接做
 $O(1)$ 的处理，所以除了那 $V$ 次 `get_urls` 调用本身耗费的时间之外，总开销是 $O(V + L)$——而那部分时
 间，正是 Part 2 要重叠掉的。
