@@ -241,18 +241,11 @@ since $1/w_i \le M$. $\blacksquare$
 *Proof.* Since $`n = \sum_j \mathrm{count}_j(n) = \sum_j w_j\, p_j(n)`$, dividing by $W$ writes $n / W$ as a
 weighted average of the $p_j(n)$ with weights $w_j / W$ summing to 1, so
 
-```math
-p_k(n) - \frac{n}{W} = \sum_{j=1}^{K} \frac{w_j}{W}\bigl(p_k(n) - p_j(n)\bigr).
-```
+$$p_k(n) - \frac{n}{W} = \sum\_{j=1}^{K} \frac{w_j}{W}\bigl(p_k(n) - p_j(n)\bigr).$$
 
 By the Lemma, $\lvert p_k(n) - p_j(n) \rvert \le \max(1/w_k, 1/w_j) \le 1/w_k + 1/w_j$, so
 
-```math
-\left\lvert p_k(n) - \frac{n}{W} \right\rvert
-  \le \sum_{j=1}^{K} \frac{w_j}{W}\left(\frac{1}{w_k} + \frac{1}{w_j}\right)
-  = \frac{1}{w_k}\underbrace{\sum_j \frac{w_j}{W}}_{=\,1} + \underbrace{\sum_j \frac{1}{W}}_{=\,K/W}
-  = \frac{1}{w_k} + \frac{K}{W}.
-```
+$$\left\lvert p_k(n) - \frac{n}{W} \right\rvert \le \sum\_{j=1}^{K} \frac{w_j}{W}\left(\frac{1}{w_k} + \frac{1}{w_j}\right) = \frac{1}{w_k}\underbrace{\sum_j \frac{w_j}{W}}\_{=\\,1} + \underbrace{\sum_j \frac{1}{W}}\_{=\\,K/W} = \frac{1}{w_k} + \frac{K}{W}.$$
 
 Multiplying by $w_k$ gives $`\lvert \mathrm{count}_k(n) - n w_k / W \rvert = w_k \lvert p_k(n) - n/W \rvert
 \le 1 + K w_k / W \le 1 + K`$, since $w_k \le W$. $\blacksquare$

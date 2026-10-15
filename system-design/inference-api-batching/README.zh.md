@@ -48,9 +48,7 @@ def run_batch(prompts: list[str], max_output_tokens: int) -> list[str]:
 
 **理论下限。** 每个副本同一时刻只跑一个批次——相当于每个副本一个*槽位*（这里 $C = 1$；当一个批次跨越不止一块 GPU 时，(e) 部分会重新讨论这一点）。在 100% 填充率下，一个副本每秒能完成 $64 / 0.1 = 640$ 个请求，所以要满足全部 $10{,}000$/秒的需求，至少需要
 
-```math
-\left\lceil \frac{10{,}000 \times 0.1}{64 \times 1} \right\rceil = \lceil 15.625 \rceil = 16 \text{ 个副本。}
-```
+$$\left\lceil \frac{10{,}000 \times 0.1}{64 \times 1} \right\rceil = \lceil 15.625 \rceil = 16 \text{ 个副本。}$$
 
 这个下限并不是应该按照它来配置的目标：它几乎没有留下任何聚合层面的备用容量（$`16`$ 个副本合计提供 $16 \times 640 = 10{,}240$ 次/秒的能力，对应 $10{,}000$/秒的需求；只要有一个副本因健康检查失败或滚动重启（rolling restart）而掉线，容量就会跌到 $15 \times 640 = 9{,}600$/秒，低于需求，排队延迟会在该副本恢复之前无限增长），而且即便所有副本都保持健康，让每个副本都跑在 $`\rho = 625/640 \approx 97.7\%`$ 的利用率（即 $16$ 个副本平分负载时的水平）上，虽然能让批次几乎总是满的，却会推高尾延迟：下面的离散事件仿真显示，在这个利用率下 p99 接近 290 ms、最大值接近 390 ms，仅在一切正常时才落在 500 ms 以内，完全没有为比泊松分布更突发（burstier）的到达过程留出余量。
 
@@ -62,10 +60,7 @@ def run_batch(prompts: list[str], max_output_tokens: int) -> list[str]:
 
 **KV cache 每 token 的字节数。** 取一个有代表性的模型配置：40 个 Transformer 层，模型宽度 $d_{\text{model}} = 5{,}120$，8 个键/值头（key/value head），每个头维度为 128（分组查询注意力，grouped-query attention，即 $5{,}120 / 128 = 40$ 个查询头，每 5 个共享其中一个 KV 头），权重和 KV 条目都以 bf16 存储（每元素 2 字节）。按标准的 $12 \times n_{\text{layers}} \times d_{\text{model}}^2$ 近似公式，参数量为 $12 \times 40 \times 5{,}120^2 \approx 12.6\text{B}$（约 126 亿），权重因此占用约 $12.6\text{B} \times 2 \approx 25.2$ GB。一个键/值缓存条目为每一层、每一个 KV 头各存一个 key 向量和一个 value 向量：
 
-```math
-\text{bytes/token} = 2 \times n_{\text{layers}} \times n_{\text{kv\_heads}} \times \text{head\_dim} \times \text{bytes/elem}
-= 2 \times 40 \times 8 \times 128 \times 2 = 163{,}840 \approx 0.164 \text{ MB。}
-```
+$$\text{bytes/token} = 2 \times n\_{\text{layers}} \times n\_{\text{kv\\\_heads}} \times \text{head\\\_dim} \times \text{bytes/elem} = 2 \times 40 \times 8 \times 128 \times 2 = 163{,}840 \approx 0.164 \text{ MB。}$$
 
 （如果用完整的多头注意力，40 个 KV 头而不是 8 个，这个数字会乘以 5，变成 0.82 MB/token——分组查询注意力正是让缓存保持这么小的原因。）在一块 80 GB 的 GPU 上，扣除 25.2 GB 的权重和 5 GB 用于激活值与运行时开销的预留，还剩约 49.8 GB 可以用于 KV 条目。一个平均长度的序列（300 输入 + 200 输出 = 500 个 token）在其完整长度下需要 $500 \times 163{,}840 \approx 81.9$ MB 的缓存，所以这部分可用内存池理论上能同时容纳约 $49.8\text{ GB} / 81.9\text{ MB} \approx 608$ 条平均长度的序列——差不多是 64 这个批次上限的 9.5 倍，所以 KV 显存并不是这个设计里限制批次大小的因素（真正的限制是计算量和固定延迟接口）；(c) 部分会把这部分富余用在前缀缓存上。
 

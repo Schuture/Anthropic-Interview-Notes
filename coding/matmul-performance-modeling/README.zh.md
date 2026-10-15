@@ -119,21 +119,13 @@ $p = 1, 2, 4, 8, 16, 32, 64$，给出两种方案每块设备的 FLOPs、权重�
 
 **形状 A** 把公式完整地走一遍。取 $(m,k,n) = (8, 4{,}096, 4{,}096)$：
 
-```math
-\text{FLOPs} = 2\cdot 8\cdot 4{,}096\cdot 4{,}096 = 268{,}435{,}456,
-```
+$$\text{FLOPs} = 2\cdot 8\cdot 4{,}096\cdot 4{,}096 = 268{,}435{,}456,$$
 
-```math
-\text{bytes} = 2\bigl(8\cdot4{,}096 + 4{,}096\cdot4{,}096 + 8\cdot4{,}096\bigr) = 2\cdot 16{,}842{,}752 = 33{,}685{,}504,
-```
+$$\text{bytes} = 2\bigl(8\cdot4{,}096 + 4{,}096\cdot4{,}096 + 8\cdot4{,}096\bigr) = 2\cdot 16{,}842{,}752 = 33{,}685{,}504,$$
 
-```math
-I = \frac{268{,}435{,}456}{33{,}685{,}504} \approx 7.97 \text{ FLOP/byte} < 208 = I^\star \implies \text{显存带宽受限},
-```
+$$I = \frac{268{,}435{,}456}{33{,}685{,}504} \approx 7.97 \text{ FLOP/byte} \< 208 = I^\star \implies \text{显存带宽受限},$$
 
-```math
-t = \max\!\left(\frac{268{,}435{,}456}{312\times10^{12}},\ \frac{33{,}685{,}504}{1.5\times10^{12}}\right) = \max(0.86,\ 22.46)\ \mu s = 22.46\ \mu s.
-```
+$$t = \max\\!\left(\frac{268{,}435{,}456}{312\times10^{12}},\ \frac{33{,}685{,}504}{1.5\times10^{12}}\right) = \max(0.86,\ 22.46)\ \mu s = 22.46\ \mu s.$$
 
 同样的公式，用在 B、C、D 上：
 
@@ -152,9 +144,7 @@ B 是把 A 的 $m$ 从 8 增大到 2,048、同时保持 $k=n=4{,}096$ 不变：�
 固定 $k,n$，强度作为 $m$ 的函数是 $`I(m) = \dfrac{2mkn}{s(m(k+n)+kn)} = \dfrac{2kn}{s}\, g(m)`$，其中
 $g(m) = \dfrac{m}{m(k+n)+kn}$。于是
 
-```math
-g'(m) = \frac{\bigl(m(k+n)+kn\bigr) - m(k+n)}{\bigl(m(k+n)+kn\bigr)^{2}} = \frac{kn}{\bigl(m(k+n)+kn\bigr)^{2}} > 0,
-```
+$$g'(m) = \frac{\bigl(m(k+n)+kn\bigr) - m(k+n)}{\bigl(m(k+n)+kn\bigr)^{2}} = \frac{kn}{\bigl(m(k+n)+kn\bigr)^{2}} > 0,$$
 
 所以 $I$ 关于 $m$ 严格递增，从 $I(0) = 0$ 一路升向 $\lim_{m\to\infty} I(m) = 2kn/(s(k+n))$——即 $k$ 与
 $n$ 的调和平均数，再除以 $s$——只能无限逼近，达不到。字节数 $s(mk+kn+mn)$ 和 FLOPs $2mkn$ 都是
@@ -181,10 +171,7 @@ $`\text{bytes}_\ell/BW \approx 1.48`$ ms）。
 
 72 层的开销完全相同，所以
 
-```math
-\text{总计算时间} = \frac{72\cdot\text{FLOPs}_\ell}{P} \approx 2{,}537.33\text{ ms}, \qquad
-\text{总搬运时间} = \frac{72\cdot\text{bytes}_\ell}{BW} \approx 106.30\text{ ms}.
-```
+$$\text{总计算时间} = \frac{72\cdot\text{FLOPs}\_\ell}{P} \approx 2{,}537.33\text{ ms}, \qquad \text{总搬运时间} = \frac{72\cdot\text{bytes}\_\ell}{BW} \approx 106.30\text{ ms}.$$
 
 总搬运时间只占总计算时间的约 4.2%，所以——和单层的情形一样——整个前向传播也是计算受限的，预测延迟就
 是这个 2,537.33 ms 的计算数字，而不是两者之和。
@@ -209,9 +196,7 @@ $`36\,t_\ell \approx 1{,}268.67`$ ms——正好是单设备总时间的一半�
 2\cdot20{,}480\cdot8{,}192 = 335{,}544{,}320 \approx 335.54`$ MB，通过互连传输需要
 $335{,}544{,}320 / (400\times10^{9}) \approx 0.84$ ms。端到端延迟：
 
-```math
-t_{\text{PP}} = 36\,t_\ell + \frac{sTd}{B_{\text{net}}} + 36\,t_\ell = 72\,t_\ell + \frac{sTd}{B_{\text{net}}}.
-```
+$$t\_{\text{PP}} = 36\\,t\_\ell + \frac{sTd}{B\_{\text{net}}} + 36\\,t\_\ell = 72\\,t\_\ell + \frac{sTd}{B\_{\text{net}}}.$$
 
 $`72\,t_\ell`$ 正好就是 Part 2 的总计算时间，$`\approx 2{,}537.33`$ ms；再加上这一次转交，
 $\approx 0.84$ ms，得到 $t_{\text{PP}} \approx 2{,}538.17$ ms。把层切到两块设备上，完全没有降低单个输
@@ -237,9 +222,7 @@ $sTd/2 = 167{,}772{,}160$ 字节 $\approx 167.77$ MB，需要 $\approx 0.42$ ms�
 汇总完的结果：U 型层每层耗时 $17.62 + 1.68 = 19.298$ ms，36 层合计 $\approx 694.73$ ms；D 型层每层耗
 时 $17.62 + 0.42 = 18.040$ ms，36 层合计 $\approx 649.43$ ms；两者相加，
 
-```math
-t_{\text{TP}} \approx 694.73 + 649.43 = 1{,}344.16\text{ ms}.
-```
+$$t\_{\text{TP}} \approx 694.73 + 649.43 = 1{,}344.16\text{ ms}.$$
 
 张量并行处理这一个输入的时间约为单设备时间的 $`1{,}344.16 / 2{,}537.33 \approx 53.0\%`$——接近一半，因为
 计算确实被两块设备真正分担了——代价是在全部 72 层的每一层都要通信。每块设备通过互连的总流量是

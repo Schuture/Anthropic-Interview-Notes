@@ -189,9 +189,7 @@ weights, V)` sums over the key axis, leaving one output vector per `(batch, quer
 maximum before `np.exp` leaves the softmax unchanged in exact arithmetic: for any constant $m$ that does
 not depend on the summed index $j$,
 
-```math
-\frac{e^{s_j - m}}{\sum_k e^{s_k - m}} = \frac{e^{-m}e^{s_j}}{e^{-m}\sum_k e^{s_k}} = \frac{e^{s_j}}{\sum_k e^{s_k}},
-```
+$$\frac{e^{s_j - m}}{\sum_k e^{s_k - m}} = \frac{e^{-m}e^{s_j}}{e^{-m}\sum_k e^{s_k}} = \frac{e^{s_j}}{\sum_k e^{s_k}},$$
 
 while keeping every exponent $\le 0$, so `np.exp` never overflows. A fully masked row has every score
 $-\infty$, so its maximum is $-\infty$ too, and $-\infty - (-\infty)$ is `nan`; the implementation
@@ -243,11 +241,7 @@ of Part 1 cannot arise in a causal block.
 components, each with mean $0$ and variance $1$, and let every $q_i$ be independent of every $k_j$.
 Then $q \cdot k = \sum_{i=0}^{d_{\text{head}}-1} q_ik_i$, and
 
-```math
-\mathrm{E}[q \cdot k] = \sum_i \mathrm{E}[q_i]\,\mathrm{E}[k_i] = 0, \qquad
-\mathrm{Var}(q\cdot k) = \mathrm{E}\Bigl[\bigl(\textstyle\sum_i q_ik_i\bigr)^2\Bigr]
-= \sum_i\sum_j \mathrm{E}[q_ik_iq_jk_j].
-```
+$$\mathrm{E}[q \cdot k] = \sum_i \mathrm{E}[q_i]\\,\mathrm{E}[k_i] = 0, \qquad \mathrm{Var}(q\cdot k) = \mathrm{E}\Bigl[\bigl(\textstyle\sum_i q_ik_i\bigr)^2\Bigr] = \sum_i\sum_j \mathrm{E}[q_ik_iq_jk_j].$$
 
 For $i \ne j$, $q_i, k_i, q_j, k_j$ are four mutually independent, zero-mean variables, so
 $\mathrm{E}[q_ik_iq_jk_j] = \mathrm{E}[q_i]\mathrm{E}[k_i]\mathrm{E}[q_j]\mathrm{E}[k_j] = 0$; for

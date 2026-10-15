@@ -270,10 +270,7 @@ $\log\pi_{\theta_{\mathrm{old}}}(o_i\mid a,b)$（之前存下来的一个已分�
 $\rho_i = \exp(0) = 1$。记 $x(\theta) = \log\pi_\theta(o_i\mid a,b)$，$`c`$ 为那个已分离的常数，则
 $\rho_i(\theta) = \exp(x(\theta) - c)$，从而
 
-```math
-\frac{\partial \rho_i}{\partial\theta} = \exp(x(\theta) - c)\cdot\frac{\partial x}{\partial\theta}
-= \rho_i \cdot \nabla_\theta\log\pi_\theta(o_i\mid a,b),
-```
+$$\frac{\partial \rho_i}{\partial\theta} = \exp(x(\theta) - c)\cdot\frac{\partial x}{\partial\theta} = \rho_i \cdot \nabla\_\theta\log\pi\_\theta(o_i\mid a,b),$$
 
 在 $\rho_i = 1$ 处即为 $\partial(\rho_i A_i)/\partial\theta = A_i\nabla_\theta\log\pi_\theta(o_i\mid a,b)$，
 恰好就是 REINFORCE 项。由于 $\rho_i = 1 \in [1-\varepsilon, 1+\varepsilon]$，$`\min(\cdot,\cdot)`$ 的两个分支

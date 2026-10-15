@@ -124,33 +124,23 @@ Test error falls from $83.8$ at $n = 10$ to $18.4$ at its local low at $n = 90$,
 
 Condition on the training inputs $X$, leaving only the label noise $\varepsilon$ random. Substituting $y = Xw^\star + \varepsilon$ into $\hat w = X^{+}y$ gives $\hat w = X^{+}Xw^\star + X^{+}\varepsilon$, and $X^{+}X = P_X$ is the orthogonal projector onto the row space of $X$ (the identity once $X$ has full column rank), so
 
-```math
-\hat w = P_X w^\star + X^{+}\varepsilon.
-```
+$$\hat w = P_X w^\star + X^{+}\varepsilon.$$
 
 Hence $E_\varepsilon[\hat w \mid X] = P_X w^\star$ and $`\mathrm{Cov}_\varepsilon(\hat w \mid X) = \sigma^2 X^{+}(X^{+})^\top`$. The *bias–variance decomposition* of the excess test error, conditional on $X$, is the split of its expectation over the noise into a part that does not vanish even with infinite data at this $n$ and a part driven purely by the noise:
 
-```math
-E_\varepsilon\bigl[\|\hat w - w^\star\|^2 \mid X\bigr] = \underbrace{\|(I - P_X)w^\star\|^2}_{\text{bias}(X)^2} + \underbrace{\sigma^2 \mathrm{tr}\bigl(X^{+}(X^{+})^\top\bigr)}_{\text{variance}(X)}.
-```
+$$E\_\varepsilon\bigl[\\|\hat w - w^\star\\|^2 \mid X\bigr] = \underbrace{\\|(I - P_X)w^\star\\|^2}\_{\text{bias}(X)^2} + \underbrace{\sigma^2 \mathrm{tr}\bigl(X^{+}(X^{+})^\top\bigr)}\_{\text{variance}(X)}.$$
 
 Writing $X^{+} = V\Sigma^{+}U^\top$ from the SVD, $X^{+}(X^{+})^\top = V(\Sigma^{+})^2 V^\top$, so its trace is the sum of the squared entries of $\Sigma^{+}$ — the sum of $1/\sigma_i^2$ over the nonzero singular values of $X$:
 
-```math
-\text{variance}(X) = \sigma^2 \sum_i \frac{1}{\sigma_i^2}.
-```
+$$\text{variance}(X) = \sigma^2 \sum_i \frac{1}{\sigma_i^2}.$$
 
 Every curve above already averages over redrawn training sets, so the reported test error at each $n$ is $E_X[\text{bias}(X)^2] + E_X[\text{variance}(X)]$. For isotropic $X$, both terms have closed forms. When $n \le d$, the row space of $X$ is a uniformly random $n$-dimensional subspace of $\mathbb{R}^d$; a fixed vector has, in expectation, the fraction $n/d$ of its squared length inside such a subspace, so $`E_X[\text{bias}(X)^2] = (1 - n/d)\|w^\star\|^2`$ — and exactly $0$ once $n \ge d$, where every direction is reachable. For the variance, $X^\top X$ (when $n > d$) or $XX^\top$ (when $n < d$) is a Wishart matrix — a sum of $\max(n,d)$ independent rank-one outer products of standard Gaussian vectors — whose inverse has a classical closed-form mean, giving
 
-```math
-E_X[\text{variance}(X)] = \sigma^2 \times \begin{cases} n / (d - n - 1) & n < d \\ d / (n - d - 1) & n > d. \end{cases}
-```
+$`\displaystyle E_X[\text{variance}(X)] = \sigma^2 \times \begin{cases} n / (d - n - 1) & n < d \\ d / (n - d - 1) & n > d. \end{cases}`$
 
 Both terms are finite once $n \ne d$, but the variance term's denominator vanishes as $n \to d$ from either side: this is the peak. The reason is the smallest singular value $\sigma_{\min}(X)$, the largest addend in $\sum_i 1/\sigma_i^2$. For $X$ with i.i.d. $N(0,1)$ entries, the *Marchenko–Pastur law* says that as $n, d \to \infty$ with $d/n \to \gamma \le 1$, the eigenvalues of $X^\top X / n$ fill the interval $[(1-\sqrt{\gamma})^2, (1+\sqrt{\gamma})^2]$; its lower edge, $(1 - \sqrt{d/n})^2$, is the smallest value the bulk of the spectrum reaches. As $n \to d$, $\gamma \to 1$ and this edge slides to $0$, so the smallest eigenvalue of $X^\top X$ is of order $n(1-\sqrt{d/n})^2 = (\sqrt n - \sqrt d)^2$, i.e.
 
-```math
-\sigma_{\min}(X) \approx |\sqrt n - \sqrt d|.
-```
+$$\sigma\_{\min}(X) \approx |\sqrt n - \sqrt d|.$$
 
 Every step of $n$ toward $d$ pushes the smallest singular value toward $0$ and its reciprocal square toward infinity: the training labels' noise, however small $\sigma$ is, gets amplified without bound by the near-singular directions of $X$. This approximation holds away from the edge, but breaks down exactly where the peak is highest: right at $n = d$, $\sigma_{\min}$ no longer concentrates near any single value — it has a limiting distribution on scale $1/\sqrt d$ with mass arbitrarily close to $0$ — so $E_X[\text{variance}(X)]$ is genuinely unbounded exactly at $n = d$, not merely large, and a finite average over any fixed set of nearby training-set draws is dominated by whichever few happen to be nearly singular. That is why the peak in Part 1 came out at $1{,}549.7$ from one fixed set of seeds rather than as a stable number the experiment converges to.
 
@@ -209,23 +199,17 @@ The same derivation runs with the roles of $n$ and $d$ exchanged: fixing $n$ and
 
 With the same SVD $X = U\Sigma V^\top$, and decomposing $w^\star$ into its row-space component $\alpha = V^\top w^\star$ and the orthogonal remainder $w^\star_\perp$ (present only when $X$ lacks full column rank), the ridge estimate works out to $`\hat w_\lambda = V\,\mathrm{diag}\bigl(\sigma_i^2/(\sigma_i^2+\lambda)\bigr)\alpha + V\,\mathrm{diag}\bigl(\sigma_i/(\sigma_i^2+\lambda)\bigr)U^\top\varepsilon`$, so that
 
-```math
-E_\varepsilon\bigl[\|\hat w_\lambda - w^\star\|^2 \mid X\bigr] = \underbrace{\|w^\star_\perp\|^2 + \sum_i \Bigl(\frac{\lambda}{\sigma_i^2+\lambda}\Bigr)^2 \alpha_i^2}_{\text{bias}_\lambda(X)^2} + \underbrace{\sigma^2 \sum_i \frac{\sigma_i^2}{(\sigma_i^2+\lambda)^2}}_{\text{variance}_\lambda(X)}.
-```
+$$E\_\varepsilon\bigl[\\|\hat w\_\lambda - w^\star\\|^2 \mid X\bigr] = \underbrace{\\|w^\star\_\perp\\|^2 + \sum_i \Bigl(\frac{\lambda}{\sigma_i^2+\lambda}\Bigr)^2 \alpha_i^2}\_{\text{bias}\_\lambda(X)^2} + \underbrace{\sigma^2 \sum_i \frac{\sigma_i^2}{(\sigma_i^2+\lambda)^2}}\_{\text{variance}\_\lambda(X)}.$$
 
 As $\lambda \to 0$ this reduces to Part 2's formulas exactly (the $\lambda$-bias term vanishes, and $\sigma_i^2/\sigma_i^4 = 1/\sigma_i^2$). For $\lambda > 0$, every summand of the variance is bounded: by AM–GM, $\sigma_i^2/(\sigma_i^2+\lambda)^2 \le 1/(4\lambda)$ for every $\sigma_i \ge 0$ (maximized at $\sigma_i^2 = \lambda$), so $`\text{variance}_\lambda(X) \le \sigma^2 \min(n,d)/(4\lambda)`$ regardless of how small $\sigma_{\min}(X)$ gets. Ridge trades a small, controlled increase in bias — the shrinkage $\lambda/(\sigma_i^2+\lambda)$ pulls every direction slightly toward $0$ — for a hard cap on the variance that removes the $1/\sigma_i^2$ blow-up entirely. Away from the threshold that trade only costs bias for no benefit, since the uncapped variance was already small there; it pays off exactly in the neighbourhood of $n = d$, where the uncapped variance would otherwise be enormous.
 
 How large should $\lambda$ be? Suppose, only for the purpose of choosing $\lambda$, that $w^\star$ itself were drawn from $N(0, \tau^2 I_d)$, independent of the label noise. The posterior mean of $w^\star$ given $(X, y)$ — the estimator minimizing expected squared error averaged over this prior — is then exactly
 
-```math
-E[w^\star \mid X, y] = \bigl(X^\top X + \tfrac{\sigma^2}{\tau^2}I_d\bigr)^{-1}X^\top y,
-```
+$$E[w^\star \mid X, y] = \bigl(X^\top X + \tfrac{\sigma^2}{\tau^2}I_d\bigr)^{-1}X^\top y,$$
 
 ridge regression with $\lambda = \sigma^2/\tau^2$, for every $n$ and $d$, not only asymptotically. A vector drawn from that prior has $`E\|w^\star\|^2 = d\tau^2`$, so using the *realized* $`\|w^\star\|^2`$ as a plug-in estimate of $d\tau^2$ gives
 
-```math
-\lambda^\star = \frac{\sigma^2}{\tau^2} \approx \frac{\sigma^2 d}{\|w^\star\|^2}.
-```
+$$\lambda^\star = \frac{\sigma^2}{\tau^2} \approx \frac{\sigma^2 d}{\\|w^\star\\|^2}.$$
 
 This is exact only on average over the prior, not for one fixed $w^\star$ — but $`\|w^\star\|^2/d`$ concentrates around $\tau^2$ as $d$ grows, and $d = 100$ is large enough for the plug-in to land close. Here $`\|w^\star\|^2 \approx 93.23`$, giving $\lambda^\star \approx 1.073$.
 

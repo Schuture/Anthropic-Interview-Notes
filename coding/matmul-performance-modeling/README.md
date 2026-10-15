@@ -138,21 +138,13 @@ FLOP/byte, fixed for every part below.
 
 **Shape A** works the formulas once in full. With $(m,k,n) = (8, 4{,}096, 4{,}096)$:
 
-```math
-\text{FLOPs} = 2\cdot 8\cdot 4{,}096\cdot 4{,}096 = 268{,}435{,}456,
-```
+$$\text{FLOPs} = 2\cdot 8\cdot 4{,}096\cdot 4{,}096 = 268{,}435{,}456,$$
 
-```math
-\text{bytes} = 2\bigl(8\cdot4{,}096 + 4{,}096\cdot4{,}096 + 8\cdot4{,}096\bigr) = 2\cdot 16{,}842{,}752 = 33{,}685{,}504,
-```
+$$\text{bytes} = 2\bigl(8\cdot4{,}096 + 4{,}096\cdot4{,}096 + 8\cdot4{,}096\bigr) = 2\cdot 16{,}842{,}752 = 33{,}685{,}504,$$
 
-```math
-I = \frac{268{,}435{,}456}{33{,}685{,}504} \approx 7.97 \text{ FLOP/byte} < 208 = I^\star \implies \text{memory-bound},
-```
+$$I = \frac{268{,}435{,}456}{33{,}685{,}504} \approx 7.97 \text{ FLOP/byte} \< 208 = I^\star \implies \text{memory-bound},$$
 
-```math
-t = \max\!\left(\frac{268{,}435{,}456}{312\times10^{12}},\ \frac{33{,}685{,}504}{1.5\times10^{12}}\right) = \max(0.86,\ 22.46)\ \mu s = 22.46\ \mu s.
-```
+$$t = \max\\!\left(\frac{268{,}435{,}456}{312\times10^{12}},\ \frac{33{,}685{,}504}{1.5\times10^{12}}\right) = \max(0.86,\ 22.46)\ \mu s = 22.46\ \mu s.$$
 
 The same formulas, applied to B, C and D:
 
@@ -171,9 +163,7 @@ instances of one fact, proved next for every variable, not only $m$ and $k$.
 For fixed $k,n$, intensity as a function of $m$ is $`I(m) = \dfrac{2mkn}{s(m(k+n)+kn)} = \dfrac{2kn}{s}\, g(m)`$
 with $g(m) = \dfrac{m}{m(k+n)+kn}$. Then
 
-```math
-g'(m) = \frac{\bigl(m(k+n)+kn\bigr) - m(k+n)}{\bigl(m(k+n)+kn\bigr)^{2}} = \frac{kn}{\bigl(m(k+n)+kn\bigr)^{2}} > 0,
-```
+$$g'(m) = \frac{\bigl(m(k+n)+kn\bigr) - m(k+n)}{\bigl(m(k+n)+kn\bigr)^{2}} = \frac{kn}{\bigl(m(k+n)+kn\bigr)^{2}} > 0,$$
 
 so $I$ is strictly increasing in $m$, from $I(0) = 0$ towards $\lim_{m\to\infty} I(m) = 2kn/(s(k+n))$ —
 the harmonic mean of $k$ and $n$, divided by $s$ — approached but never reached. Bytes
@@ -204,10 +194,7 @@ $`\text{bytes}_\ell/BW \approx 1.48`$ ms).
 
 With all 72 layers identical in cost,
 
-```math
-\text{total compute time} = \frac{72\cdot\text{FLOPs}_\ell}{P} \approx 2{,}537.33\text{ ms}, \qquad
-\text{total transfer time} = \frac{72\cdot\text{bytes}_\ell}{BW} \approx 106.30\text{ ms}.
-```
+$$\text{total compute time} = \frac{72\cdot\text{FLOPs}\_\ell}{P} \approx 2{,}537.33\text{ ms}, \qquad \text{total transfer time} = \frac{72\cdot\text{bytes}\_\ell}{BW} \approx 106.30\text{ ms}.$$
 
 Total transfer time is about 4.2% of total compute time, so — as at the single-layer level — the whole
 pass is compute-bound, and its predicted latency is the 2,537.33 ms compute figure, not the sum of the
@@ -238,9 +225,7 @@ activation has shape $T\times d$: $\text{bytes} = sTd = 2\cdot20{,}480\cdot8{,}1
 \approx 335.54$ MB, taking $335{,}544{,}320 / (400\times10^{9}) \approx 0.84$ ms over the interconnect.
 End-to-end latency:
 
-```math
-t_{\text{PP}} = 36\,t_\ell + \frac{sTd}{B_{\text{net}}} + 36\,t_\ell = 72\,t_\ell + \frac{sTd}{B_{\text{net}}}.
-```
+$$t\_{\text{PP}} = 36\\,t\_\ell + \frac{sTd}{B\_{\text{net}}} + 36\\,t\_\ell = 72\\,t\_\ell + \frac{sTd}{B\_{\text{net}}}.$$
 
 $`72\,t_\ell`$ is exactly the Part 2 total compute time, $\approx 2{,}537.33$ ms; adding the one handoff,
 $\approx 0.84$ ms, gives $t_{\text{PP}} \approx 2{,}538.17$ ms. Splitting the layers across two devices
@@ -270,9 +255,7 @@ layer needs the gathered result: type-U layers cost $17.62 + 1.68 = 19.298$ ms e
 $\approx 694.73$ ms; type-D layers cost $17.62 + 0.42 = 18.040$ ms each, $36$ of them
 $\approx 649.43$ ms; together,
 
-```math
-t_{\text{TP}} \approx 694.73 + 649.43 = 1{,}344.16\text{ ms}.
-```
+$$t\_{\text{TP}} \approx 694.73 + 649.43 = 1{,}344.16\text{ ms}.$$
 
 Tensor parallelism finishes this one input in about $`1{,}344.16 / 2{,}537.33 \approx 53.0\%`$ of the
 single-device time — nearly half, since compute genuinely splits across the two devices — at the cost
